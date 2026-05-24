@@ -23,6 +23,7 @@ EpollPoller::~EpollPoller() {
 void EpollPoller::poll(int timeout, ChannelList *activeChannels) {
   std::cout << "EPollPoller::poll() waiting for events, timeout=" << timeout
             << "ms" << std::endl;
+  // >0:有numEvents事件就绪，==0:超时了，没有事件，==-1出错
   int numEvents = ::epoll_wait(epollfd_, events_.data(),
                                static_cast<int>(events_.size()), timeout);
   int savedErrno = errno;

@@ -1,7 +1,6 @@
 #pragma once
 #include "tupo/base/Thread.h"
 #include "tupo/base/Timestamp.h"
-#include "tupo/net/Channel.h"
 #include "tupo/net/TimerId.h"
 #include "tupo/net/TimerQueue.h"
 #include <assert.h>
@@ -13,6 +12,7 @@ namespace Tupo {
 namespace net {
 class Poller;
 class EventLoop;
+class Channel;
 extern __thread EventLoop *t_loopInThisThread; // 声明
 
 class EventLoop {
@@ -62,6 +62,7 @@ public:
 
   // 定时器操作
   typedef std::function<void()> TimerCallback;
+  
   // 在指定的绝对时间点执行一次回调函数
   TimerId runAt(const Tupo::base::Timestamp &time, const TimerCallback cb);
   // 在延迟指定时间后执行一次回调函数。

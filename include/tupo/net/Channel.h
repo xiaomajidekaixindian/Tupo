@@ -2,11 +2,25 @@
 
 #include <functional>
 #include <poll.h>
+/**
+ * // 可读事件
+ * POLLIN      有数据可读
+ * POLLPRI     紧急数据可读
+ *
+ * // 可写事件
+ * POLLOUT     可写入数据
+ *
+ * // 异常事件
+ * POLLERR     发生错误
+ * POLLHUP     连接断开/挂起
+ * POLLNVAL    无效文件描述符
+ */
+
 namespace Tupo {
 namespace net {
 class EventLoop;
+class EventLoop;
 class Channel {
-
 public:
   typedef std::function<void()> EventCallback;
   Channel(EventLoop *loop, int fd);
@@ -40,7 +54,7 @@ public:
   void set_index(int index) { index_ = index; }
   int index() const { return index_; }
 
-  int revents() { return revents_; }
+  int revents() const { return revents_; }
 
   // 手动设置事件状态
   void enableReading() {
@@ -76,12 +90,12 @@ private:
   static const int KReadEvent = POLLIN | POLLPRI;
   static const int kWriteEvent = POLLOUT;
 
-  Tupo::net::EventLoop *loop_; // 所属的EventLoop
-  const int fd_;               // 监听的文件描述符
-  int events_;                 // 关心的IO事件，输入事件
-  int revents_;                // 目前活动的事件，输出事件
-  int index_;                  // 在pollfd或者epoll_event结构体数组的索引
-  bool addedToLoop_;           // 是否已添加到 EventLoop
+  EventLoop *loop_;  // 所属的EventLoop
+  const int fd_;     // 监听的文件描述符
+  int events_;       // 关心的IO事件，输入事件
+  int revents_;      // 目前活动的事件，输出事件
+  int index_;        // 在pollfd或者epoll_event结构体数组的索引
+  bool addedToLoop_; // 是否已添加到 EventLoop
 
   EventCallback readCallback_;
   EventCallback writeCallback_;

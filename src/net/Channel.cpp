@@ -8,14 +8,17 @@ Channel::Channel(Tupo::net::EventLoop *loop, int fd)
     : loop_(loop), fd_(fd), events_(0), revents_(0), index_(-1),
       addedToLoop_(false) {}
 Channel::~Channel() { remove(); }
+
 void Channel::handleEvent() {
   if (revents_ & POLLNVAL) {
     std::cerr << "Channel::handle_event() POLLNVAL" << std::endl;
   }
+
   if (revents_ & (POLLERR | POLLNVAL)) {
     if (errorCallback_)
       errorCallback_();
   }
+
   if (revents_ & (POLLIN | POLLPRI | POLLRDHUP)) {
     if (readCallback_)
       readCallback_();
@@ -34,8 +37,8 @@ void Channel::remove() {
 }
 
 void Channel::update() {
-  loop_->updateChannel(this);
   addedToLoop_ = true;
+  loop_->updateChannel(this);
 }
 }; // namespace net
 } // namespace Tupo

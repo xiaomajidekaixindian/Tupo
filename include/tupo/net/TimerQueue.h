@@ -9,7 +9,6 @@ namespace Tupo {
 namespace net {
 class EventLoop;
 class TimerId;
-class Channel;
 
 class TimerQueue {
 public:

@@ -37,3 +37,7 @@ Phase 3:
 base/ → AsyncLogging.h → Singleton.h
 net/ → Buffer.h → TcpServer.h → EventLoopThreadPool.h
 ```
+
+### 代码工作流程
+
+![代码工作流程](.resource/image.png)

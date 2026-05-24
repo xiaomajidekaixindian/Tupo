@@ -18,6 +18,7 @@ public:
 private:
   void update(int operation, Channel *channel);
   static const int kInitEventListSize = 16;
+  
   // 添加活跃的文件描述符到数组
   void findActiveChannels(int numEvents, ChannelList *activeChannels) const;
 
