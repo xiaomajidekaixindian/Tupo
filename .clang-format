@@ -1,0 +1,2 @@
+# 只设置命名空间不缩进，其他保持默认
+NamespaceIndentation: None
