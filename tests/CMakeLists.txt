@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(tupo_tests)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 使用绝对路径
@@ -75,3 +75,6 @@ target_link_libraries(timer_test tupo_base tupo_net GTest::gtest GTest::gtest_ma
 add_executable(timerqueue_test net/TimerQueue_test.cpp)
 target_link_libraries(timerqueue_test tupo_base tupo_net GTest::gtest GTest::gtest_main Threads::Threads)
 
+# TimerId测试
+add_executable(timerid_test net/TimerId_test.cpp)
+target_link_libraries(timerid_test tupo_base tupo_net GTest::gtest GTest::gtest_main Threads::Threads)

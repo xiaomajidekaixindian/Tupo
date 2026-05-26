@@ -3,8 +3,11 @@
 #include "tupo/net/Channel.h"
 #include "tupo/net/Timer.h"
 #include "tupo/net/TimerId.h"
+#include <atomic>
 #include <set>
 #include <utility>
+#include <vector>
+
 namespace Tupo {
 namespace net {
 class EventLoop;

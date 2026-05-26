@@ -32,10 +32,22 @@ TEST_F(TimestampTest, NowMethod) {
   auto ts1 = Tupo::base::Timestamp::now();
   auto ts2 = Tupo::base::Timestamp::now();
 
+  std::cout << "ts1的微秒值为:" << ts1.microSecondsSinceEpoch() << std::endl;
+  std::cout << "ts2的微秒值为:" << ts2.microSecondsSinceEpoch() << std::endl;
+
   // 验证时间戳不为0
   EXPECT_GT(ts1.microSecondsSinceEpoch(), 0);
   EXPECT_GT(ts2.microSecondsSinceEpoch(), 0);
 
   // 验证第二个时间戳应该大于等于第一个（考虑到执行时间）
   EXPECT_LE(ts1.microSecondsSinceEpoch(), ts2.microSecondsSinceEpoch());
+}
+
+// 测试4：测试resetTime()方法
+
+TEST_F(TimestampTest, resetTimeMethod) {
+  auto ts = Tupo::base::Timestamp::now();
+  double interval = 3.0;
+  Tupo::base::Timestamp time = Tupo::base::Timestamp::resetTime(ts, interval);
+  std::cout << "3秒后时间为:" << time.microSecondsSinceEpoch() << std::endl;
 }

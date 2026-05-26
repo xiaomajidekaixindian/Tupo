@@ -2,6 +2,8 @@
 
 namespace Tupo {
 namespace net {
+
+// 重置定时器
 void Timer::restart(Tupo::base::Timestamp now) {
   if (repeat_) {
     expiration_ = Tupo::base::Timestamp::resetTime(now, interval_);

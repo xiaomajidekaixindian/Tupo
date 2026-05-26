@@ -8,6 +8,7 @@
 #include <memory>
 #include <pthread.h>
 #include <sys/types.h>
+#include <vector>
 namespace Tupo {
 namespace net {
 class Poller;
@@ -62,7 +63,7 @@ public:
 
   // 定时器操作
   typedef std::function<void()> TimerCallback;
-  
+
   // 在指定的绝对时间点执行一次回调函数
   TimerId runAt(const Tupo::base::Timestamp &time, const TimerCallback cb);
   // 在延迟指定时间后执行一次回调函数。

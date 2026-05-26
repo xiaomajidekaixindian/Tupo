@@ -4,6 +4,7 @@
 #include "tupo/net/TimerQueue.h"
 #include <functional>
 #include <gtest/gtest.h>
+#include <memory>
 #include <vector>
 class TimerQueueTest : public ::testing::Test {
 protected:
