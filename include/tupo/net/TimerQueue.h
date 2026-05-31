@@ -18,9 +18,11 @@ public:
   explicit TimerQueue(EventLoop *loop);
   TimerQueue(const TimerQueue &) = delete;
   TimerQueue &operator=(const TimerQueue &) = delete;
+  TimerQueue(TimerQueue &&) = delete;
+  TimerQueue &operator=(TimerQueue &&) = delete;
   ~TimerQueue();
 
-  TimerId addTimer(const Timer::TimerCallback cb, Tupo::base::Timestamp when,
+  TimerId addTimer(Timer::TimerCallback cb, Tupo::base::Timestamp when,
                    double interval);
 
 private:
@@ -28,6 +30,7 @@ private:
 
   typedef std::pair<Tupo::base::Timestamp, Timer *> Entry;
   typedef std::set<Entry> TimerList;
+  
   typedef std::pair<Timer *, int64_t> ActiveTimer;
   typedef std::set<ActiveTimer> ActiveTimerSet;
   EventLoop *loop_;

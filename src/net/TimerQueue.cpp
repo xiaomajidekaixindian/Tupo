@@ -32,9 +32,12 @@ void readTimerfd(int timerfd, Tupo::base::Timestamp now) {
 
 // 重置定时器
 void resetTimerfd(int timerfd, Tupo::base::Timestamp expration) {
+  // 仅支持秒和纳秒
   struct itimerspec newValue;
   struct itimerspec oldValue;
-  memset(&oldValue, 0, sizeof(newValue));
+
+  // 清空，防止就数据
+  memset(&oldValue, 0, sizeof(oldValue));
   memset(&newValue, 0, sizeof(newValue));
 
   // 计算超时时间
@@ -50,7 +53,7 @@ void resetTimerfd(int timerfd, Tupo::base::Timestamp expration) {
   // 设置定时器
   newValue.it_value.tv_sec =
       microSeconds / Tupo::base::Timestamp::kMicroSecondsPerSecond;
-      
+
   newValue.it_value.tv_nsec =
       (microSeconds % Tupo::base::Timestamp::kMicroSecondsPerSecond) * 1000;
 
@@ -71,12 +74,20 @@ TimerQueue::TimerQueue(EventLoop *loop)
 
 TimerQueue::~TimerQueue() {}
 
-TimerId TimerQueue::addTimer(const Timer::TimerCallback cb,
+TimerId TimerQueue::addTimer(Timer::TimerCallback cb,
                              Tupo::base::Timestamp when, double interval) {
   Timer *timer = new Timer(std::move(cb), when, interval);
-
+  
+  // 更新定时器！如果不更新，会导致定时器无法按预期触发
+  loop_->runInLoop([this, timer]() {
+    bool earliestChanged = insert(timer);
+    if (earliestChanged) {
+      detail::resetTimerfd(timerfd_, timer->expiration());
+    }
+  });
   // 插入定时器到集合中
   auto result = timers_.insert(Entry(when, timer));
+  detail::resetTimerfd(timerfd_, when); // 重新设置定时器触发时间
   return TimerId(timer, timer->sequence());
 }
 
@@ -87,7 +98,7 @@ void TimerQueue::handleRead() {
 
   // 读取timerfd，清除可读状态
   detail::readTimerfd(timerfd_, now);
-  
+
   // 处理过期的定时器
   std::vector<Entry> expired = getExpired(now);
   callingExpiredTimers_ = true;
@@ -141,7 +152,7 @@ void TimerQueue::reset(const std::vector<Entry> &expired,
     if (!timers_.empty()) {
       nextExpire = timers_.begin()->first;
     }
-    }
+  }
 }
 
 bool TimerQueue::insert(Timer *timer) {

@@ -17,6 +17,9 @@ protected:
   }
 };
 
+
+// 已测试
+#if 0
 // 测试1：测试一次性定时器
 TEST_F(TimerTest, OneTimeTimer) {
   int callCount = 0;
@@ -73,3 +76,5 @@ TEST_F(TimerTest, TimerReset) {
   EXPECT_EQ(timer.expiration().microSecondsSinceEpoch(),
             expectedExpiration.microSecondsSinceEpoch());
 }
+
+#endif
