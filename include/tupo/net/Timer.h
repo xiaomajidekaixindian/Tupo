@@ -33,6 +33,8 @@ private:
   // cb: 定时器回调函数
   // when: 定时器到期时间
   // interval: 定时器间隔时间，单位为秒，0表示非重复定时器
+  // repeat: 是否为重复定时器
+  // sequence: 定时器序列号，用于区分不同定时器
   Timer(TimerCallback cb, Tupo::base::Timestamp when, double interval)
       : callback_(std::move(cb)), expiration_(when), interval_(interval),
         repeat_(interval > 0.0), sequence_(0) {}

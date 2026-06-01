@@ -20,7 +20,7 @@ int createTimerfd() {
   return timerfd;
 }
 
-// 读取timerfd，清除可读状态
+// 读取timerfd，清除可读状态，定时器每超时一次，内核就给fd内部的计时器+1，只要计时器>0，fd就可读
 void readTimerfd(int timerfd, Tupo::base::Timestamp now) {
   uint64_t howmany;
   ssize_t n = ::read(timerfd, &howmany, sizeof howmany);
@@ -68,7 +68,11 @@ TimerQueue::TimerQueue(EventLoop *loop)
     : loop_(loop), timerfd_(detail::createTimerfd()),
       timerfdChannel_(loop, timerfd_), callingExpiredTimers_(false) {
   std::cout << "TimerQueue created" << std::endl;
+  
+  // 定时器到期变为可读状态，触发
   timerfdChannel_.setReadCallback([this]() { this->handleRead(); });
+
+  // 将定时器fd注册到事件循环中，监听可读事件
   timerfdChannel_.enableReading();
 }
 
@@ -77,17 +81,15 @@ TimerQueue::~TimerQueue() {}
 TimerId TimerQueue::addTimer(Timer::TimerCallback cb,
                              Tupo::base::Timestamp when, double interval) {
   Timer *timer = new Timer(std::move(cb), when, interval);
-  
+
   // 更新定时器！如果不更新，会导致定时器无法按预期触发
   loop_->runInLoop([this, timer]() {
+    loop_->assertInLoopThread();
     bool earliestChanged = insert(timer);
     if (earliestChanged) {
       detail::resetTimerfd(timerfd_, timer->expiration());
     }
   });
-  // 插入定时器到集合中
-  auto result = timers_.insert(Entry(when, timer));
-  detail::resetTimerfd(timerfd_, when); // 重新设置定时器触发时间
   return TimerId(timer, timer->sequence());
 }
 
@@ -107,7 +109,14 @@ void TimerQueue::handleRead() {
     it.second->run();
   }
   callingExpiredTimers_ = false;
+
+  reset(expired, now);
+
+  if (!timers_.empty()) {
+    detail::resetTimerfd(timerfd_, timers_.begin()->first);
+  }
 }
+
 std::vector<TimerQueue::Entry>
 TimerQueue::getExpired(Tupo::base::Timestamp now) {
   std::vector<Entry> expired;

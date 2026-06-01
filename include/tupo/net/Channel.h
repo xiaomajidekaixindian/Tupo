@@ -31,16 +31,16 @@ public:
   void handleEvent();
 
   // 绑定回调函数
-  void setReadCallback(const EventCallback &cb) {
+  void setReadCallback(EventCallback cb) {
     readCallback_ = std::move(cb);
   }
-  void setWriteCallback(const EventCallback &cb) {
+  void setWriteCallback(EventCallback cb) {
     writeCallback_ = std::move(cb);
   }
-  void setErrorCallback(const EventCallback &cb) {
+  void setErrorCallback(EventCallback cb) {
     errorCallback_ = std::move(cb);
   }
-  void setCloseCallback(const EventCallback &cb) {
+  void setCloseCallback(EventCallback cb) {
     closeCallback_ = std::move(cb);
   }
 

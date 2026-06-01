@@ -13,7 +13,7 @@ echo -e "${GREEN} 准备清理旧构建目录...${NC}"
 echo -e "${GREEN}========================================${NC}"
 
 # 🔥 每次编译前强制删除旧的 build 文件夹
-rm -rf build
+# rm -rf build
 
 echo -e "${GREEN}========================================${NC}"
 echo -e "${GREEN} 开始执行 CMake 构建...${NC}"

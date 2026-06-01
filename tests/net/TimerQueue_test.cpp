@@ -62,12 +62,32 @@ TEST_F(TimerQueueTest, TimerLooping) {
   
   EXPECT_TRUE(timerId.valid());
   // 运行事件循环一段时间，让定时器有机会触发
-  loop_->runAfter(5, [this]() { this->loop_->quit(); }); // 5s后退出循环
+  loop_->runAfter(3, [this]() { this->loop_->quit(); }); // 5s后退出循环
   loop_->loop();                                           // 启动事件循环
   // 因为回调没有被执行
   EXPECT_EQ(callbackCount, 1);
   EXPECT_TRUE(loop_->isQuits());
 }
 
-// Test 4：测试EventLoop定时器功能
-TEST_F(TimerQueueTest, TimerLoop) {}
+// Test 4：测试runAfter延时定时器
+TEST_F(TimerQueueTest, RunAfterTest) {
+  Tupo::net::TimerId timerId =
+      loop_->runAfter(1.0, [this]() { this->simpleCallback(); });
+  EXPECT_TRUE(timerId.valid());
+  loop_->runAfter(3, [this]() { this->loop_->quit(); }); // 5s后退出循环
+  loop_->loop();                                           // 启动事件循环
+  EXPECT_EQ(callbackCount, 1);
+  EXPECT_TRUE(loop_->isQuits());
+}
+
+// Test 5：测试runEvery重复定时器
+TEST_F(TimerQueueTest, RunEveryTest) {
+  Tupo::net::TimerId timerId =
+      loop_->runEvery(1.0, [this]() { this->simpleCallback(); });
+  EXPECT_TRUE(timerId.valid());
+  loop_->runAfter(5, [this]() { this->loop_->quit(); }); // 5s后退出循环
+  loop_->loop();                                           // 启动事件循环
+  EXPECT_GE(callbackCount, 4); // 至少触发4次（1s、2s、3s、4s）
+  EXPECT_TRUE(loop_->isQuits());
+  std::cout<<"callbackCount:"<<callbackCount<<std::endl;
+}
