@@ -138,6 +138,7 @@ TimerQueue::getExpired(Tupo::base::Timestamp now) {
     size_t n = activeTimers_.erase(timer);
     assert(n == 1);
   }
+  //  
   assert(timers_.size() == activeTimers_.size());
 
   return expired;
