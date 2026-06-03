@@ -68,7 +68,7 @@ TimerQueue::TimerQueue(EventLoop *loop)
     : loop_(loop), timerfd_(detail::createTimerfd()),
       timerfdChannel_(loop, timerfd_), callingExpiredTimers_(false) {
   std::cout << "TimerQueue created" << std::endl;
-  
+
   // 定时器到期变为可读状态，触发
   timerfdChannel_.setReadCallback([this]() { this->handleRead(); });
 
@@ -124,12 +124,14 @@ TimerQueue::getExpired(Tupo::base::Timestamp now) {
   // 找出所有<=now的定时器
   Entry sentry = std::make_pair(now, reinterpret_cast<Timer *>(UINTPTR_MAX));
 
-  // 1. 一次查找找到分界点
+  // 1. 找到第一个>now的定时器位置，所有在此之前的定时器都是过期的，[begin,
+  // end)区间
   TimerList::iterator end = timers_.lower_bound(sentry);
   assert(end == timers_.end() || now < end->first);
 
   // 2. 批量拷贝到期的定时器
-  std::copy(timers_.begin(), end, back_inserter(expired));
+  expired.reserve(std::distance(timers_.begin(), end)); // 预分配
+  std::move(timers_.begin(), end, back_inserter(expired));
 
   // 3. 批量删除已处理的定时器
   timers_.erase(timers_.begin(), end);
@@ -138,7 +140,7 @@ TimerQueue::getExpired(Tupo::base::Timestamp now) {
     size_t n = activeTimers_.erase(timer);
     assert(n == 1);
   }
-  //  
+  //
   assert(timers_.size() == activeTimers_.size());
 
   return expired;

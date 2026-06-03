@@ -37,8 +37,9 @@ private:
   const int timerfd_;
   Channel timerfdChannel_;
 
-  // 移除过期的定时器
+  // 移除过期的定时器并返回
   std::vector<Entry> getExpired(Tupo::base::Timestamp now);
+
   // 处理已到期的定时器，并重新设置下一个定时器触发时间。
   void reset(const std::vector<Entry> &expired, Tupo::base::Timestamp now);
 
