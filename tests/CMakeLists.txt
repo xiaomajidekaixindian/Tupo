@@ -78,3 +78,7 @@ target_link_libraries(timerqueue_test tupo_base tupo_net GTest::gtest GTest::gte
 # TimerId测试
 add_executable(timerid_test net/TimerId_test.cpp)
 target_link_libraries(timerid_test tupo_base tupo_net GTest::gtest GTest::gtest_main Threads::Threads)
+
+# TimerQueueMultiThread测试
+add_executable(TimerQueueMultiThreadTest net/TimerQueueMultiThreadTest.cpp)  
+target_link_libraries(TimerQueueMultiThreadTest tupo_base tupo_net GTest::gtest GTest::gtest_main Threads::Threads)
