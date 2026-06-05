@@ -3,6 +3,7 @@
 #include "tupo/base/Timestamp.h"
 #include "tupo/net/TimerId.h"
 #include "tupo/net/TimerQueue.h"
+#include "tupo/base/MutexLock.h"
 #include <assert.h>
 #include <atomic>
 #include <memory>
@@ -84,7 +85,7 @@ private:
   std::atomic<bool> quit_;
   const pid_t threadId_;           // 所属线程ID
   std::unique_ptr<Poller> poller_; // Poller对象
-
+  Tupo::base::MutexLockGuard mutex_; // 保护pendingFunctors_的互斥锁
   typedef std::vector<Channel *> ChannelList;
   ChannelList activeChannels_;
   std::unique_ptr<TimerQueue> timerQueue_;

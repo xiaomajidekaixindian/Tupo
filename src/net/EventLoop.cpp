@@ -95,6 +95,9 @@ void EventLoop::runInLoop(const Functor &cb) {
   if (isInLoopThread()) {
     cb();
   }
+  else{
+    
+  }
 }
 
 TimerId EventLoop::runAt(const Tupo::base::Timestamp &time,
