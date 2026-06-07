@@ -7,15 +7,16 @@ namespace base {
 
 class MutexLock {
 public:
-  void lock();
-  void unlock();
-  std::mutex &getMutex();
-
   MutexLock() = default;
   MutexLock(const MutexLock &) = delete;
   MutexLock &operator=(const MutexLock &) = delete;
   MutexLock(const MutexLock &&) = delete;
   MutexLock &&operator=(const MutexLock &&) = delete;
+  ~MutexLock();
+
+  void lock();
+  void unlock();
+  std::mutex &getMutex();
 
 private:
   std::mutex mutex_;

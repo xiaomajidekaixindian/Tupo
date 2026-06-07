@@ -16,20 +16,23 @@ public:
   ~Thread();
   Thread(const Thread &) = delete;
   Thread &operator=(const Thread &) = delete;
-  Thread(const Thread &&) noexcept;
-  Thread &&operator=(const Thread &&) noexcept;
+  Thread(Thread &&other) noexcept;
+  Thread &operator=(Thread &&other) noexcept;
 
   void start();
   void join();
+  void detach();
 
   bool started() { return started_; }
   bool joined() { return joined_; }
+  bool detached() { return detached_; }
   static pid_t currentThreadTid(); // 获取当前线程id
 
 private:
   std::atomic<bool> started_;
   std::atomic<bool> joined_;
-  pid_t tid_;
+  std::atomic<bool> detached_;
+  std::atomic<pid_t> tid_;
   std::thread thread_;
   ThreadFunc func_;
 };

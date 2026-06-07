@@ -1,9 +1,9 @@
 #pragma once
+#include "tupo/base/MutexLock.h"
 #include "tupo/base/Thread.h"
 #include "tupo/base/Timestamp.h"
 #include "tupo/net/TimerId.h"
 #include "tupo/net/TimerQueue.h"
-#include "tupo/base/MutexLock.h"
 #include <assert.h>
 #include <atomic>
 #include <memory>
@@ -71,21 +71,22 @@ public:
   TimerId runAfter(double delay, TimerCallback cb);
 
   // 每隔指定的时间间隔重复执行回调函数。
-  TimerId runEvery(double interval,  TimerCallback cb);
+  TimerId runEvery(double interval, TimerCallback cb);
 
   // 唤醒epoll_wait,否则会一直阻塞
   void wakeup();
 
   // 判断是否quit
   bool isQuits() const { return quit_; }
+
 private:
   void abortNotInLoopThread();
 
-  std::atomic<bool> looping_;      
+  std::atomic<bool> looping_;
   std::atomic<bool> quit_;
   const pid_t threadId_;           // 所属线程ID
   std::unique_ptr<Poller> poller_; // Poller对象
-  Tupo::base::MutexLockGuard mutex_; // 保护pendingFunctors_的互斥锁
+  // Tupo::base::MutexLockGuard mutex_; // 保护pendingFunctors_的互斥锁
   typedef std::vector<Channel *> ChannelList;
   ChannelList activeChannels_;
   std::unique_ptr<TimerQueue> timerQueue_;
@@ -95,6 +96,8 @@ private:
   int wakeupFd_;
   // 包装唤醒的文件描述符
   std::unique_ptr<Channel> wakeupChannel_;
+
+  // std::vector<Functor> pendingFunctors_;
 };
 } // namespace net
 } // namespace Tupo

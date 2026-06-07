@@ -65,8 +65,8 @@ void EventLoop::loop() {
 void EventLoop::quit() {
   std::cout << "EventLoop quit" << std::endl;
   quit_ = true;
-  //如果在其他线程调用，需要唤醒 poll，否则可能永久阻塞
-  //wakeup(); 
+  // 如果在其他线程调用，需要唤醒 poll，否则可能永久阻塞
+  // wakeup();
 }
 
 void EventLoop::updateChannel(Channel *channel) {
@@ -94,17 +94,13 @@ void EventLoop::abortNotInLoopThread() {
 void EventLoop::runInLoop(const Functor &cb) {
   if (isInLoopThread()) {
     cb();
-  }
-  else{
-    
+  } else {
   }
 }
 
-TimerId EventLoop::runAt(const Tupo::base::Timestamp &time,
-                         TimerCallback cb) {
+TimerId EventLoop::runAt(const Tupo::base::Timestamp &time, TimerCallback cb) {
   return timerQueue_->addTimer(std::move(cb), time, 0.0);
 }
-
 
 TimerId EventLoop::runAfter(double delay, TimerCallback cb) {
   Tupo::base::Timestamp time(
