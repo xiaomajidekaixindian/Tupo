@@ -11,13 +11,12 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 # 创建基础库 - 显式列出所有源文件
 add_library(tupo_base
     src/base/MutexLock.cpp
-    src/base/Condition.cpp
-    src/base/Atomic.cpp
+    src/base/Condition.cpp   
     src/base/Thread.cpp
     src/base/Timestamp.cpp
 )
 
-# 创建网络库
+# 创建网络库    
 add_library(tupo_net
     src/net/EventLoop.cpp
     src/net/poller/PollPoller.cpp

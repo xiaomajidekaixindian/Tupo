@@ -22,12 +22,13 @@ public:
   void start();
   void join();
   void detach();
+  pid_t tid() const { return tid_; }
 
   bool started() { return started_; }
   bool joined() { return joined_; }
   bool detached() { return detached_; }
   static pid_t currentThreadTid(); // 获取当前线程id
-
+  const std::string &name() { return name_; }
 private:
   std::atomic<bool> started_;
   std::atomic<bool> joined_;
@@ -35,6 +36,7 @@ private:
   std::atomic<pid_t> tid_;
   std::thread thread_;
   ThreadFunc func_;
+  std::string name_;
 };
 } // namespace base
 } // namespace Tupo
