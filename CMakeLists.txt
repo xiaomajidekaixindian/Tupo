@@ -25,6 +25,8 @@ add_library(tupo_net
     src/net/poller/EpollPoller.cpp
     src/net/Timer.cpp
     src/net/TimerQueue.cpp
+    src/net/Socket.cpp  
+
 )
 # 如果网络库依赖基础库，添加链接
 target_link_libraries(tupo_net PUBLIC tupo_base)

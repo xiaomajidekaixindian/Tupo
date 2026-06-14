@@ -57,10 +57,6 @@ public:
   Poller *poller() { return poller_.get(); }
   const Poller *poller() const { return poller_.get(); }
 
-  // 解决多线程环境下，非IO线程安全地向IO线程（即EventLoop所在线程）提交任务的同步问题
-  using Functor = std::function<void()>;
-  void runInLoop(const Functor &cb);
-
   // 定时器操作
   typedef std::function<void()> TimerCallback;
 
@@ -79,6 +75,16 @@ public:
   // 判断是否quit
   bool isQuits() const { return quit_; }
 
+  // 解决多线程环境下，非IO线程安全地向IO线程（即EventLoop所在线程）提交任务的同步问题
+  using Functor = std::function<void()>;
+  void runInLoop(const Functor &cb);
+  void runInLoop(Functor &&cb);
+
+  // 投递到IO线程执行
+  void queueInLoop(const Functor &cb);
+  void queueInLoop(Functor &&cb);
+
+  void doPendingFunctors(); // 执行回调函数
 private:
   void abortNotInLoopThread();
 
@@ -86,7 +92,6 @@ private:
   std::atomic<bool> quit_;
   const pid_t threadId_;           // 所属线程ID
   std::unique_ptr<Poller> poller_; // Poller对象
-  // Tupo::base::MutexLockGuard mutex_; // 保护pendingFunctors_的互斥锁
   typedef std::vector<Channel *> ChannelList;
   ChannelList activeChannels_;
   std::unique_ptr<TimerQueue> timerQueue_;
@@ -94,10 +99,13 @@ private:
   void handleRead(); // 处理wakeup
   // 唤醒事件循环
   int wakeupFd_;
+
   // 包装唤醒的文件描述符
   std::unique_ptr<Channel> wakeupChannel_;
 
-  // std::vector<Functor> pendingFunctors_;
+  // 跨线程相关
+  Tupo::base::MutexLock mutex_;
+  std::vector<Functor> pendingFunctors_;
 };
 } // namespace net
 } // namespace Tupo

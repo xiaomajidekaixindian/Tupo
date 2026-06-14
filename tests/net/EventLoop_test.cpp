@@ -33,8 +33,6 @@ void timeout() {
   g_loop->quit();
 }
 
-#if 0
-
 int main() {
   Tupo::net::EventLoop loop;
   g_loop = &loop;
@@ -54,5 +52,3 @@ int main() {
 
   //::close(timerfd);
 }
-
-#endif

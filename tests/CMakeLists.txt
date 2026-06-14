@@ -86,3 +86,7 @@ target_link_libraries(TimerQueueMultiThreadTest tupo_base tupo_net GTest::gtest 
 # Thread测试
 add_executable(Thread_test base/Thread_test.cpp)
 target_link_libraries(Thread_test tupo_base GTest::gtest GTest::gtest_main Threads::Threads)
+
+# EventLoop单元测试
+add_executable(EventLoop_UnitTest net/EventLoop_UnitTest.cpp)
+target_link_libraries(EventLoop_UnitTest tupo_net GTest::gtest GTest::gtest_main Threads::Threads)  

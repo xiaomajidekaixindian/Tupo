@@ -57,6 +57,7 @@ void EventLoop::loop() {
     for (auto it : activeChannels_) {
       it->handleEvent();
     }
+    doPendingFunctors();
   }
   std::cout << "EventLoop" << this << "stop looping" << std::endl;
   looping_ = false;
@@ -66,7 +67,9 @@ void EventLoop::quit() {
   std::cout << "EventLoop quit" << std::endl;
   quit_ = true;
   // 如果在其他线程调用，需要唤醒 poll，否则可能永久阻塞
-  // wakeup();
+  if (!isInLoopThread()) {
+    wakeup();
+  }
 }
 
 void EventLoop::updateChannel(Channel *channel) {
@@ -95,6 +98,42 @@ void EventLoop::runInLoop(const Functor &cb) {
   if (isInLoopThread()) {
     cb();
   } else {
+    queueInLoop(cb);
+  }
+}
+
+void EventLoop::runInLoop(Functor &&cb) {
+  if (isInLoopThread()) {
+    cb();
+  } else {
+    queueInLoop(std::move(cb));
+  }
+}
+
+void EventLoop::queueInLoop(const Functor &cb) {
+  {
+    Tupo::base::MutexLockGuard lock(mutex_);
+    pendingFunctors_.push_back(cb);
+  }
+  wakeup();
+}
+
+void EventLoop::queueInLoop(Functor &&cb) {
+  {
+    Tupo::base::MutexLockGuard lock(mutex_);
+    pendingFunctors_.push_back(std::move(cb));
+  }
+  wakeup();
+}
+
+void EventLoop::doPendingFunctors() {
+  std::vector<Functor> functors;
+  {
+    Tupo::base::MutexLockGuard lock(mutex_);
+    functors.swap(pendingFunctors_);
+  }
+  for (const auto &functor : functors) {
+    functor();
   }
 }
 
