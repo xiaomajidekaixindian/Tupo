@@ -35,5 +35,34 @@ int Socket::accept(struct sockaddr *addr, socklen_t *addrlen) {
   }
   return connfd;
 }
+
+void Socket::setSockOpt(int level, int optname, const void *optval,
+                        socklen_t optlen) {
+  if (::setsockopt(sockfd_, level, optname, optval, optlen) < 0) {
+    // 处理设置套接字选项错误
+    // 可以抛出异常或者记录日志
+    std::cerr << "Socket setsockopt error: " << strerror(errno) << std::endl;
+  }
+}
+
+void Socket::setReuseAddr(bool on) {
+  int optval = on ? 1 : 0;
+  setSockOpt(SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+}
+
+void Socket::setReusePort(bool on) {
+  int optval = on ? 1 : 0;
+  setSockOpt(SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+}
+
+void Socket::setTcpNoDelay(bool on) {
+  int optval = on ? 1 : 0;
+  setSockOpt(IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(optval));
+}
+
+void Socket::setKeepAlive(bool on) {
+  int optval = on ? 1 : 0;
+  setSockOpt(SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval));
+}
 } // namespace net
 } // namespace Tupo
