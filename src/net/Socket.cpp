@@ -1,6 +1,7 @@
 #include "tupo/net/Socket.h"
 #include <cstring>
 #include <iostream>
+
 namespace Tupo {
 namespace net {
 
@@ -34,6 +35,16 @@ int Socket::accept(struct sockaddr *addr, socklen_t *addrlen) {
     std::cerr << "Socket accept error: " << strerror(errno) << std::endl;
   }
   return connfd;
+}
+
+int Socket::createNonblockingOrDie() {
+  // IPV4，TCP通信，非阻塞模式，执行时关闭
+  int sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
+  if (sockfd < 0) {
+    std::cerr << "Socket::createNonblockingOrDie failed" << std::endl;
+    abort();
+  }
+  return sockfd;
 }
 
 void Socket::setSockOpt(int level, int optname, const void *optval,

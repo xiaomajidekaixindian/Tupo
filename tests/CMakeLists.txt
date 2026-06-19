@@ -90,3 +90,7 @@ target_link_libraries(Thread_test tupo_base GTest::gtest GTest::gtest_main Threa
 # EventLoop单元测试
 add_executable(EventLoop_UnitTest net/EventLoop_UnitTest.cpp)
 target_link_libraries(EventLoop_UnitTest tupo_net GTest::gtest GTest::gtest_main Threads::Threads)  
+
+# Socket单元测试
+add_executable(Socket_test net/Socket_test.cpp)
+target_link_libraries(Socket_test tupo_net GTest::gtest GTest::gtest_main Threads::Threads)  

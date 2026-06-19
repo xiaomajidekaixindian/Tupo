@@ -1,3 +1,7 @@
+#pragma once
+
+#include <netinet/in.h>  // 定义 IPPROTO_TCP
+#include <netinet/tcp.h> // 定义 TCP_NODELAY
 #include <sys/socket.h>
 #include <unistd.h>
 namespace Tupo {
@@ -11,6 +15,9 @@ public:
   void bind(const struct sockaddr *addr, socklen_t addrlen);
   void listen();
   int accept(struct sockaddr *addr, socklen_t *addrlen);
+
+  // 创建一个非阻塞的 TCP socket
+  static int createNonblockingOrDie();
   // 地址重用
   void setReuseAddr(bool on);
 

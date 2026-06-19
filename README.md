@@ -54,8 +54,46 @@ net/ → Buffer.h → TcpServer.h → EventLoopThreadPool.h
 
 **reset()算法**
 
+### InetAddress
 
+**业务场景**
 
+场景1：服务端监听所有网卡
+
+```cpp
+// 我想在 8080 端口提供服务，接受任何网卡的连接
+InetAddress addr(8080);  
+// 内部：0.0.0.0:8080（所有网卡）
+```
+
+场景2：服务端只监听本地（测试/调试用）
+
+```cpp
+// 我只想让本机连接，不让外部访问
+InetAddress addr(8080, true);  
+// 内部：127.0.0.1:8080（只能本机访问）
+```
+
+场景3：客户端连接指定服务器
+
+```cpp
+// 我要连接 192.168.1.100 的 8080 端口
+InetAddress serverAddr("192.168.1.100", 8080);
+```
+
+场景4：从 accept 获取客户端地址
+
+```cpp
+// accept 系统调用返回的是 C 结构体
+struct sockaddr_in clientAddr;
+socklen_t len = sizeof(clientAddr);
+int connfd = accept(listenFd, (struct sockaddr*)&clientAddr, &len);
+
+// 需要把它转成 InetAddress 才能方便使用
+InetAddress peer(clientAddr);  // 封装成 InetAddress
+std::cout << "新连接来自: " << peer.toIpPort() << std::endl;
+// 输出：新连接来自: 192.168.1.50:54321
+```
 
 ### 问题
 
