@@ -10,8 +10,8 @@ InetAddress::InetAddress(uint16_t port, bool loopbackOnly) {
   if (loopbackOnly) {
     // 127.0.0.1
     addr->sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-  }
-  {
+  } 
+  else {
     // any
     addr->sin_addr.s_addr = htonl(INADDR_ANY);
   }
