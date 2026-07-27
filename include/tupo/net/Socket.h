@@ -4,6 +4,8 @@
 #include <netinet/tcp.h> // 定义 TCP_NODELAY
 #include <sys/socket.h>
 #include <unistd.h>
+#include "tupo/net/InetAddress.h"
+
 namespace Tupo {
 namespace net {
 
@@ -14,7 +16,7 @@ public:
   void close();
   void bind(const struct sockaddr *addr, socklen_t addrlen);
   void listen();
-  int accept(struct sockaddr *addr, socklen_t *addrlen);
+  int accept(InetAddress *peerAddr);
 
   // 创建一个非阻塞的 TCP socket
   static int createNonblockingOrDie();

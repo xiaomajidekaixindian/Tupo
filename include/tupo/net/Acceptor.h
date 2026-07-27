@@ -1,21 +1,28 @@
 #pragma once
 #include "tupo/net/EventLoop.h"
-
+#include "tupo/net/Socket.h"
+#include "tupo/net/Channel.h"
+#include "tupo/net/InetAddress.h"
 namespace Tupo {
 namespace net {
 class Acceptor {
 public:
-  Acceptor(EventLoop *loop);
+  Acceptor(EventLoop *loop,const InetAddress &addr);
   
+  // 监听
   void listen() {
-    // 在这里可以实现监听逻辑，例如创建套接字、绑定地址、开始监听等
   }
   
 private:
+  // 处理新连接
   void handleRead() {
-    // 在这里可以实现处理新连接的逻辑，例如接受连接、创建新的Channel等
+  
   }
+
   EventLoop *loop_;
+  Socket acceptSocket_;
+  Channel acceptChannel_;
+  bool isListening;
 };
 } // namespace net
 } // namespace Tupo

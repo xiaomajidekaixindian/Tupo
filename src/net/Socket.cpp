@@ -27,8 +27,10 @@ void Socket::listen() {
   }
 }
 
-int Socket::accept(struct sockaddr *addr, socklen_t *addrlen) {
-  int connfd = ::accept(sockfd_, addr, addrlen);
+int Socket::accept(InetAddress *peerAddr) {
+  const struct sockaddr* sockaddr = peerAddr->getSockAddr();
+  socklen_t addrlen = sizeof(struct sockaddr_storage);
+  int connfd = ::accept(sockfd_,const_cast<struct sockaddr *>(sockaddr), &addrlen);
   if (connfd < 0) {
     // 处理接受连接错误
     // 可以抛出异常或者记录日志
