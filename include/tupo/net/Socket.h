@@ -11,13 +11,13 @@ namespace net {
 
 class Socket {
 public:
-  explicit Socket(int sockfd) : sockfd_(sockfd) {}
+  explicit Socket(int sockfd);
   int fd() const { return sockfd_; }
   void close();
   void bind(const struct sockaddr *addr, socklen_t addrlen);
   void listen();
   int accept(InetAddress *peerAddr);
-
+  int accept(InetAddress *peerAddr, socklen_t *addrlen);
   // 创建一个非阻塞的 TCP socket
   static int createNonblockingOrDie();
   // 地址重用

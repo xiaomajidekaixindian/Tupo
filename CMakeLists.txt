@@ -27,6 +27,7 @@ add_library(tupo_net
     src/net/TimerQueue.cpp
     src/net/Socket.cpp  
     src/net/InetAddress.cpp
+    src/net/Acceptor.cpp
 )
 # 如果网络库依赖基础库，添加链接
 target_link_libraries(tupo_net PUBLIC tupo_base)

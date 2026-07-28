@@ -5,6 +5,8 @@
 namespace Tupo {
 namespace net {
 
+Socket::Socket(int sockfd) : sockfd_(sockfd) {}
+
 void Socket::close() {
   if (sockfd_ >= 0) {
     ::close(sockfd_);
@@ -28,9 +30,20 @@ void Socket::listen() {
 }
 
 int Socket::accept(InetAddress *peerAddr) {
-  const struct sockaddr* sockaddr = peerAddr->getSockAddr();
-  socklen_t addrlen = sizeof(struct sockaddr_storage);
-  int connfd = ::accept(sockfd_,const_cast<struct sockaddr *>(sockaddr), &addrlen);
+  struct sockaddr_storage addr;
+  socklen_t addrlen = sizeof(addr);
+  int connfd = ::accept(sockfd_, reinterpret_cast<struct sockaddr *>(&addr), &addrlen);
+  if (connfd < 0) {
+    // 处理接受连接错误
+    // 可以抛出异常或者记录日志
+    std::cerr << "Socket accept error: " << strerror(errno) << std::endl;
+  }
+  return connfd;
+}
+
+int Socket::accept(InetAddress *peerAddr, socklen_t *addrlen) {
+  struct sockaddr* sockaddr = peerAddr->getSockAddr();
+  int connfd = ::accept(sockfd_,sockaddr, addrlen);
   if (connfd < 0) {
     // 处理接受连接错误
     // 可以抛出异常或者记录日志

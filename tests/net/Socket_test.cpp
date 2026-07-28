@@ -21,7 +21,6 @@ TEST_F(SocketTest, CreateAndClose) {
 }
 
 // 测试2：Socket选项测试
-
 TEST_F(SocketTest, SetSocketOptions) {
   int fd = Tupo::net::Socket::createNonblockingOrDie();
   Tupo::net::Socket sock(fd);
@@ -31,4 +30,13 @@ TEST_F(SocketTest, SetSocketOptions) {
   EXPECT_NO_THROW(sock.setReusePort(true));
   EXPECT_NO_THROW(sock.setTcpNoDelay(true));
   EXPECT_NO_THROW(sock.setKeepAlive(true));
+}
+
+// 测试3：Socket绑定和监听
+TEST_F(SocketTest, BindAndListen) {
+  int fd = Tupo::net::Socket::createNonblockingOrDie();
+  Tupo::net::Socket sock(fd);
+  Tupo::net::InetAddress addr(8080); // 绑定到8080
+  EXPECT_NO_THROW(sock.bind(addr.getSockAddr(), sizeof(addr.getSockAddr())));
+  EXPECT_NO_THROW(sock.listen());
 }
