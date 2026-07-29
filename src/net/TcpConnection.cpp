@@ -8,5 +8,16 @@ TcpConnection::TcpConnection(int sockfd, EventLoop *loop,
     localAddr_(localAddr), peerAddr_(peerAddr) {
         
     }
+
+void TcpConnection::handleRead(){}
+
+void TcpConnection::handleWrite(){}
+
+void TcpConnection::handleError(){}
+
+void TcpConnection::handleClose() {}
+
+
 }
+
 }

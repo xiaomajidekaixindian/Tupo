@@ -25,6 +25,7 @@ private:
   EventLoop *loop_;
   Socket acceptSocket_;
   Channel acceptChannel_;
+  InetAddress localAddr_;
   bool isListening;
   NewConnectionCallback newConnectionCallback_;
 };

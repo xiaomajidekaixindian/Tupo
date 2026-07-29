@@ -17,7 +17,7 @@ Acceptor::Acceptor(EventLoop *loop,const InetAddress &addr) : loop_(loop),
 void Acceptor::listen(){
   if(!isListening){
     acceptSocket_.listen();
-
+    //std::cout<<"服务器在："
     acceptChannel_.enableReading();
 
     isListening = true;
@@ -28,7 +28,8 @@ void Acceptor::handleRead() {
   InetAddress peerAddr;
   int connfd = acceptSocket_.accept(&peerAddr);
   // 处理新连接的逻辑，例如创建一个新的连接对象，注册到事件
-  if(connfd>=0){
+  if(connfd >= 0){
+    std::cout<<"有新连接到来！"<<std::endl;
     newConnectionCallback_(connfd, peerAddr);
   } else {
     // 处理accept错误

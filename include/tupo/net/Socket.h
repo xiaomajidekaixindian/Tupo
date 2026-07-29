@@ -18,8 +18,10 @@ public:
   void listen();
   int accept(InetAddress *peerAddr);
   int accept(InetAddress *peerAddr, socklen_t *addrlen);
+  
   // 创建一个非阻塞的 TCP socket
   static int createNonblockingOrDie();
+
   // 地址重用
   void setReuseAddr(bool on);
 
