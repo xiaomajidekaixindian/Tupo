@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "tupo/net/TcpServer.h"
 #include "tupo/net/EventLoop.h"
+#include "tupo/net/InetAddress.h"
 class TcpServerTest : public ::testing::Test {
 protected:
   void SetUp() override {
@@ -18,5 +19,6 @@ protected:
 // 测试1：建立新的连接
 TEST_F(TcpServerTest, NewConnectionTest) {
   server_->start();
+  printf("Server listening on : %s\n", server_->toIpPort().c_str()); 
   loop_->loop(); // 启动事件循环
 }

@@ -45,5 +45,29 @@ InetAddress::InetAddress(const struct sockaddr_in6 &addr) {
   *dst = addr;
 }
 
+std::string InetAddress::toIp() const{
+  // ipv4缓冲区大小
+  char buf[INET_ADDRSTRLEN];
+  const struct sockaddr_in* addr4 = reinterpret_cast<const sockaddr_in*>(&addr_);
+  inet_ntop(AF_INET,&addr4->sin_addr,buf,sizeof(buf));
+  return std::string(buf);
+}
+
+uint16_t InetAddress::toPort() const{
+  const struct sockaddr_in* addr4 = reinterpret_cast<const sockaddr_in*>(&addr_);
+  return ntohs(addr4->sin_port);
+}
+
+std::string InetAddress::toIpPort() const{
+  char ip[INET_ADDRSTRLEN] = {0};
+  uint16_t port = 0;
+  const struct sockaddr_in* addr4 = reinterpret_cast<const sockaddr_in*>(&addr_);
+  inet_ntop(AF_INET, &addr4->sin_addr, ip, sizeof(ip));
+  port = ntohs(addr4->sin_port);
+        
+  char buf[64] = {0};
+  snprintf(buf, sizeof(buf), "%s:%u", ip, port);
+  return std::string(buf);
+}
 } // namespace net
 } // namespace Tupo

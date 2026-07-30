@@ -27,6 +27,15 @@ public:
 
   // 获取sockaddr_in
   const struct sockaddr_in *getSockAddrIn() const { return reinterpret_cast<const struct sockaddr_in *>(&addr_); }
+
+  // 获取ip字符串
+  std::string toIp()const;
+
+  // 获取端口
+  uint16_t toPort()const;
+
+  // 获取IP:Port
+  std::string toIpPort()const;
 private:
   struct sockaddr_storage addr_;
 };

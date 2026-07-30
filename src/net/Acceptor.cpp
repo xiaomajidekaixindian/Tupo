@@ -5,8 +5,8 @@ namespace net {
 Acceptor::Acceptor(EventLoop *loop,const InetAddress &addr) : loop_(loop),
     acceptSocket_(Socket::createNonblockingOrDie()),
     acceptChannel_(loop, acceptSocket_.fd()),
-    isListening(false)
-{
+    isListening(false),localAddr_(addr) {
+
     acceptSocket_.setReuseAddr(true);
     acceptSocket_.setReusePort(true);
 
@@ -14,10 +14,12 @@ Acceptor::Acceptor(EventLoop *loop,const InetAddress &addr) : loop_(loop),
     acceptChannel_.setReadCallback(std::bind(&Acceptor::handleRead, this));
 }
 
-void Acceptor::listen(){
+void Acceptor::listen() {
   if(!isListening){
     acceptSocket_.listen();
-    //std::cout<<"服务器在："
+
+    printf("Server listening on : %s\n", localAddr_.toIpPort().c_str());
+
     acceptChannel_.enableReading();
 
     isListening = true;
@@ -27,6 +29,7 @@ void Acceptor::listen(){
 void Acceptor::handleRead() {
   InetAddress peerAddr;
   int connfd = acceptSocket_.accept(&peerAddr);
+  std::cout<<"connfd:"<<connfd<<std::endl;
   // 处理新连接的逻辑，例如创建一个新的连接对象，注册到事件
   if(connfd >= 0){
     std::cout<<"有新连接到来！"<<std::endl;

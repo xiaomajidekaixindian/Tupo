@@ -10,10 +10,16 @@ class Acceptor;
 class TcpServer {
 public:
   using TcpConnectionPtr = std::shared_ptr<TcpConnection>;
-
+  using TcpConnectionCallback = std::function<void(const std::shared_ptr<TcpConnection>&)>;
   TcpServer(EventLoop *loop, const InetAddress &addr);
 
   void start();
+
+  std::string toIp()const;
+
+  uint16_t toPort()const;
+
+  std::string toIpPort()const;
 private:
   void onNewConnection(int sockfd, const InetAddress &peerAddr);
   
@@ -21,6 +27,9 @@ private:
   EventLoop *loop_;
   Acceptor acceptor_;
   InetAddress localAddr_;
+
+  TcpConnectionCallback tcpConnectionCallback_;
+
   // 管理连接
   std::unordered_map<int, TcpConnectionPtr> connections_;
 };

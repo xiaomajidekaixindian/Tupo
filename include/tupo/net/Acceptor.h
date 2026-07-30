@@ -16,7 +16,7 @@ public:
   void listen();
   
   void setNewConnectionCallback(NewConnectionCallback cb) {
-    newConnectionCallback_ = std::move(cb);
+     newConnectionCallback_ = std::move(cb);
   }
 private:
   // 处理新连接
