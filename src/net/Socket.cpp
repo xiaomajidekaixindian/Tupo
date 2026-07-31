@@ -14,6 +14,7 @@ void Socket::close() {
 }
 
 void Socket::bind(const struct sockaddr *addr, socklen_t addrlen) {
+  std::cout<<"sockfd："<<sockfd_<<"，addrlen"<<addrlen<<std::endl;
   if (::bind(sockfd_, addr, addrlen) < 0) {
     // 处理绑定错误
     // 可以抛出异常或者记录日志

@@ -36,8 +36,12 @@ public:
 
   // 获取IP:Port
   std::string toIpPort()const;
+
+  // 获取ipv4长度
+  const socklen_t getLength() const{ return len_; } 
 private:
   struct sockaddr_storage addr_;
+  socklen_t len_;
 };
 
 } // namespace net
