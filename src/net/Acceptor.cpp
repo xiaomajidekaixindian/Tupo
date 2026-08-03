@@ -11,7 +11,9 @@ Acceptor::Acceptor(EventLoop *loop,const InetAddress &addr) : loop_(loop),
     acceptSocket_.setReusePort(true);
 
     acceptSocket_.bind(addr.getSockAddr(), addr.getLength());
-    acceptChannel_.setReadCallback(std::bind(&Acceptor::handleRead, this));
+    acceptChannel_.setReadCallback([this]{
+      this->handleRead();
+    });
 }
 
 void Acceptor::listen() {
@@ -28,7 +30,6 @@ void Acceptor::listen() {
 
 void Acceptor::handleRead() {
   InetAddress peerAddr;
-  std::cout<<"connfd:"<<std::endl;
   int connfd = acceptSocket_.accept(&peerAddr);
   // 处理新连接的逻辑，例如创建一个新的连接对象，注册到事件
   if(connfd >= 0){
@@ -36,7 +37,7 @@ void Acceptor::handleRead() {
     newConnectionCallback_(connfd, peerAddr);
   } else {
     // 处理accept错误
-    std::cerr << "Acceptor::handleRead accept error: " << strerror( errno) << std::endl;
+    std::cerr << "Acceptor::handleRead accept error: " << strerror(errno) << std::endl;
   }
 }
 } // namespace net

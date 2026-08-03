@@ -4,31 +4,77 @@
 
 ```txt
 Tupo/
-├── include/
-|   |
-|   ├── tupo
-|   |     ├── base/
-|   |     |     ├── MutexLock.h 
-|   |     |     ├── Atomic.h
-|   |     |     ├── Condition.h
-|   |     |     ├── Thread.h
-|   |     |
-|   |     └── net/
-│   ├── 
-│   ├── 
-│   └──
-├── src/
+├── CMakeLists.txt                  # 顶层构建脚本,生成 tupo_base / tupo_net 两个静态库
+├── README.md
+├── build.sh                        # 一键编译脚本
+├── .clang-format                   # 代码风格配置
+├── .resource/
+│   └── image.png                   # 代码工作流程图
+├── examples/
+│   └── ThreadEventLoop.cpp         # 示例:多线程各跑一个 EventLoop
+├── include/tupo/                   # 公共头文件(接口)
+│   ├── base/                       # 基础库
+│   │   ├── MutexLock.h             # 互斥锁封装
+│   │   ├── Condition.h             # 条件变量
+│   │   ├── Thread.h                # 线程封装(移动语义 + promise/future 同步)
+│   │   └── Timestamp.h             # 时间戳
+│   └── net/                        # 网络库
+│       ├── EventLoop.h             # 事件循环核心(one loop per thread)
+│       ├── Channel.h               # fd 事件分发
+│       ├── Poller.h                # IO 多路复用抽象接口
+│       ├── Timer.h                 # 定时器
+│       ├── TimerId.h               # 定时器标识
+│       ├── TimerQueue.h            # 定时器队列(timerfd 驱动)
+│       ├── Socket.h                # socket 封装
+│       ├── InetAddress.h           # 网络地址封装
+│       ├── Acceptor.h              # 监听与 accept
+│       ├── TcpConnection.h         # TCP 连接
+│       ├── TcpServer.h             # TCP 服务端
+│       └── poller/
+│           ├── EpollPoller.h       # epoll 实现
+│           └── PollPoller.h        # poll 实现
+├── src/                            # 实现(与 include 一一对应)
 │   ├── base/
-│   │   └── MutexLock.cpp
+│   │   ├── MutexLock.cpp
+│   │   ├── Condition.cpp
+│   │   ├── Thread.cpp
+│   │   └── Timestamp.cpp
 │   └── net/
-│       ├── 
-│       ├── 
-│       └── 
-└── tests/
-    ├── test_mutex.cpp
-    └── 
+│       ├── EventLoop.cpp
+│       ├── Channel.cpp
+│       ├── Poller.cpp
+│       ├── Timer.cpp
+│       ├── TimerQueue.cpp
+│       ├── Socket.cpp
+│       ├── InetAddress.cpp
+│       ├── Acceptor.cpp
+│       ├── TcpConnection.cpp
+│       ├── TcpServer.cpp
+│       └── poller/
+│           ├── EpollPoller.cpp
+│           └── PollPoller.cpp
+└── tests/                          # TDD 单元测试
+    ├── CMakeLists.txt              # 测试构建脚本
+    ├── build.sh
+    ├── base/
+    │   ├── MutexLock_test.cpp
+    │   ├── Thread_test.cpp
+    │   └── Timestamp_test.cpp
+    └── net/
+        ├── EpollPoller_test.cpp
+        ├── PollPoller_test.cpp
+        ├── EventLoop_test.cpp
+        ├── EventLoop_UnitTest.cpp
+        ├── Timer_test.cpp
+        ├── TimerId_test.cpp
+        ├── TimerQueue_test.cpp
+        ├── TimerQueueMultiThreadTest.cpp
+        ├── Socket_test.cpp
+        ├── InetAddress_test.cpp
+        └── TcpServer_test.cpp
 ```
 
+### 开发路线图
 
 ```txt
 Phase 1:

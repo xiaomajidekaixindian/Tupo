@@ -7,8 +7,8 @@ namespace net {
 
 TcpServer::TcpServer(EventLoop *loop, const InetAddress &listenAddr)
     : isStart_(false),loop_(loop), acceptor_(loop, listenAddr),localAddr_(listenAddr) {
-        acceptor_.setNewConnectionCallback([this](int sockfd, const InetAddress &peerAddr) {
-            this->onNewConnection(sockfd, peerAddr);
+        acceptor_.setNewConnectionCallback([this](int connfd, const InetAddress &peerAddr) {
+            this->onNewConnection(connfd, peerAddr);
     });
 }
 void TcpServer::start(){
@@ -30,13 +30,34 @@ std::string TcpServer::toIpPort() const{
     return localAddr_.toIpPort();
 }
 
-void TcpServer::onNewConnection(int sockfd, const InetAddress &peerAddr) {
-    auto conn = std::make_shared<TcpConnection>(sockfd, loop_, localAddr_, peerAddr);
+void TcpServer::onNewConnection(int connfd, const InetAddress &peerAddr) {
+    auto conn = std::make_shared<TcpConnection>(connfd, loop_, localAddr_, peerAddr);
     std::cout<<"有新连接"<<std::endl;
 
     conn->setConnectionCallback(tcpConnectionCallback_);
 
-    connections_[sockfd] = conn; 
+    conn->setCloseCallback([this](const TcpConnectionPtr &conn){
+        removeConnection(conn);
+    });
+    connections_[connfd] = conn;
+
+    // 启动连接
+    conn->connectEstablished();
+
 }
+
+void TcpServer::removeConnection(const TcpConnectionPtr & conn){
+    loop_->runInLoop([this,conn]{
+        removeConnectionInLoop(conn);
+    });
+}
+
+void TcpServer::removeConnectionInLoop(const TcpConnectionPtr & conn){
+    size_t n = connections_.erase(conn->getFd());
+    if(n > 0) {
+        conn->connectDestroyed();
+    }
+}
+
 } // namespace net
 } // namespace Tupo

@@ -7,7 +7,7 @@ namespace net {
 Channel::Channel(Tupo::net::EventLoop *loop, int fd)
     : loop_(loop), fd_(fd), events_(0), revents_(0), index_(-1),
       addedToLoop_(false) {}
-Channel::~Channel() { remove(); }
+Channel::~Channel() { remove();}
 
 void Channel::handleEvent() {
   if (revents_ & POLLNVAL) {

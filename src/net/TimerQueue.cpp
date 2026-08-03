@@ -76,7 +76,10 @@ TimerQueue::TimerQueue(EventLoop *loop)
   timerfdChannel_.enableReading();
 }
 
-TimerQueue::~TimerQueue() {}
+TimerQueue::~TimerQueue() {
+  timerfdChannel_.remove();
+  ::close(timerfd_);
+}
 
 TimerId TimerQueue::addTimer(Timer::TimerCallback cb,
                              Tupo::base::Timestamp when, double interval) {

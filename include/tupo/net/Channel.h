@@ -71,7 +71,10 @@ public:
   }
   void disableAll() {
     events_ = kNoneEvent;
-    update();
+    if (loop_ && addedToLoop_){
+        update();
+        addedToLoop_ = false;
+    }
   }
   // 移除事件
   void remove();

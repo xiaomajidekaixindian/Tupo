@@ -10,7 +10,7 @@ class Acceptor;
 class TcpServer {
 public:
   using TcpConnectionPtr = std::shared_ptr<TcpConnection>;
-  using TcpConnectionCallback = std::function<void(const std::shared_ptr<TcpConnection>&)>;
+  using TcpConnectionCallback = std::function<void(const TcpConnectionPtr&)>;
   TcpServer(EventLoop *loop, const InetAddress &addr);
 
   void start();
@@ -22,7 +22,8 @@ public:
   std::string toIpPort()const;
 private:
   void onNewConnection(int sockfd, const InetAddress &peerAddr);
-  
+  void removeConnection(const TcpConnectionPtr & conn);
+  void removeConnectionInLoop(const TcpConnectionPtr & conn);
   bool isStart_;
   EventLoop *loop_;
   Acceptor acceptor_;

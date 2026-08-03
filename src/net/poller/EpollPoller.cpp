@@ -80,7 +80,6 @@ void EpollPoller::removeChannel(Channel *channel) {
 
   assert(channels_.find(fd) != channels_.end());
   assert(channels_[fd] == channel);
-  assert(!channel->isNoneEvent());
 
   // 如果还在 epoll 中，先删除
   if (!channel->isNoneEvent()) {

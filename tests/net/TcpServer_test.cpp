@@ -16,7 +16,7 @@ protected:
   std::unique_ptr<Tupo::net::TcpServer> server_;
 };
 
-// 测试1：建立新的连接
+// 测试1：建立新的连接和关闭连接
 TEST_F(TcpServerTest, NewConnectionTest) {
   server_->start();
   printf("Server listening on : %s\n", server_->toIpPort().c_str()); 

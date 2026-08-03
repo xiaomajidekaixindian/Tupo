@@ -41,6 +41,8 @@ EventLoop::~EventLoop() {
   if (t_loopInThisThread == this) {
     t_loopInThisThread = nullptr;
   }
+  wakeupChannel_->remove();
+  ::close(wakeupChannel_->fd());
 }
 
 void EventLoop::loop() {
