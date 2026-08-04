@@ -36,7 +36,7 @@ void resetTimerfd(int timerfd, Tupo::base::Timestamp expration) {
   struct itimerspec newValue;
   struct itimerspec oldValue;
 
-  // 清空，防止就数据
+  // 清空，防止旧数据
   memset(&oldValue, 0, sizeof(oldValue));
   memset(&newValue, 0, sizeof(newValue));
 

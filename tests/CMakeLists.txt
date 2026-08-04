@@ -102,3 +102,7 @@ target_link_libraries(InetAddress_test tupo_net GTest::gtest GTest::gtest_main T
 # TcpServer单元测试
 add_executable(TcpServer_test net/TcpServer_test.cpp)
 target_link_libraries(TcpServer_test tupo_net GTest::gtest GTest::gtest_main Threads::Threads)
+
+# Buffer单元测试
+add_executable(Buffer_test net/Buffer_test.cpp)
+target_link_libraries(Buffer_test tupo_net GTest::gtest GTest::gtest_main Threads::Threads)
