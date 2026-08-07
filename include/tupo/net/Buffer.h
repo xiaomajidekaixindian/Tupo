@@ -20,14 +20,9 @@ public:
   Buffer(Buffer&&)=default;
   Buffer& operator=(Buffer&&)=default;
 
-  // 可读字节
+  // 可读字节（已经写入字节数）
   size_t readableBytes() const {
     return writeIndex_ - readIndex_;
-  }
-
-  // 可写字节
-  size_t writableBytes() const {
-    return buffer_.size() - writeIndex_;
   }
 
   // 预留空间
@@ -35,9 +30,12 @@ public:
     return readIndex_;
  }
 
-  // 读取数据
+  // 读取数据（写入移动位置）
   void retrieve(size_t len);
   void retrieveAll();
+  std::string retrieveAsString(size_t len);
+  std::string retrieveAllAsString();
+
 
   // 写入数据
   void append(const char* data, size_t len);
@@ -67,9 +65,12 @@ public:
   char *begin() {
     return buffer_.data();
   }
-
+  
 private:
-
+  // buffer空间大小
+  size_t writableBytes() const {
+    return buffer_.size() - writeIndex_;
+  }
 
   // 扩容
   void makeSpace(size_t len);

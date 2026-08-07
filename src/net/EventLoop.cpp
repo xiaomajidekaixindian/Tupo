@@ -115,7 +115,7 @@ void EventLoop::runInLoop(Functor &&cb) {
 void EventLoop::queueInLoop(const Functor &cb) {
   {
     Tupo::base::MutexLockGuard lock(mutex_);
-    pendingFunctors_.push_back(cb);
+    pendingFunctors_.emplace_back(cb);
   }
   wakeup();
 }

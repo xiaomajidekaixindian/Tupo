@@ -23,6 +23,19 @@ void Buffer::retrieveAll(){
     writeIndex_ = kCheapPrepend;
 }
 
+std::string Buffer::retrieveAsString(size_t len){
+    if(len > readableBytes()){
+        len = readableBytes();
+    }
+    std::string result(readablePtr(), len);
+    retrieve(len);
+    return result;
+}
+
+std::string Buffer::retrieveAllAsString(){
+    return retrieveAsString(readableBytes());
+}
+
 void Buffer::append(const char* data, size_t len){
     if(writableBytes()<len){
         makeSpace(len);

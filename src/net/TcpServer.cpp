@@ -32,10 +32,10 @@ std::string TcpServer::toIpPort() const{
 
 void TcpServer::onNewConnection(int connfd, const InetAddress &peerAddr) {
     auto conn = std::make_shared<TcpConnection>(connfd, loop_, localAddr_, peerAddr);
-    std::cout<<"有新连接"<<std::endl;
 
     conn->setConnectionCallback(tcpConnectionCallback_);
-
+    conn->setMessageCallback(messageCallback_);
+    conn->setWriteCompleteCallback(writeCompleteCallback_);
     conn->setCloseCallback([this](const TcpConnectionPtr &conn){
         removeConnection(conn);
     });
@@ -43,7 +43,6 @@ void TcpServer::onNewConnection(int connfd, const InetAddress &peerAddr) {
 
     // 启动连接
     conn->connectEstablished();
-
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr & conn){

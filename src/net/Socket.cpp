@@ -91,5 +91,16 @@ void Socket::setKeepAlive(bool on) {
   int optval = on ? 1 : 0;
   setSockOpt(SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval));
 }
+
+void Socket::shutdownWrite(){
+    if (sockfd_ > 0) {
+      if (::shutdown(sockfd_, SHUT_WR) < 0) {
+          // 如果已经关闭了，忽略错误
+          if (errno != ENOTCONN) {
+                std::cerr << "Socket::shutdownWrite error: " << strerror(errno) << std::endl;
+            }
+        }
+    }
+}
 } // namespace net
 } // namespace Tupo

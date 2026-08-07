@@ -34,6 +34,8 @@ public:
   // 保持连接
   void setKeepAlive(bool on);
 
+  // 关闭写端
+  void shutdownWrite();
 private:
   void setSockOpt(int level, int optname, const void *optval, socklen_t optlen);
   int sockfd_;

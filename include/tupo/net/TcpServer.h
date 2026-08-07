@@ -11,6 +11,8 @@ class TcpServer {
 public:
   using TcpConnectionPtr = std::shared_ptr<TcpConnection>;
   using TcpConnectionCallback = std::function<void(const TcpConnectionPtr&)>;
+  using MessageCallback = std::function<void(const TcpConnectionPtr&, Buffer&)>;
+  using WriteCompleteCallback = std::function<void(const TcpConnectionPtr&)>;
   TcpServer(EventLoop *loop, const InetAddress &addr);
 
   void start();
@@ -30,7 +32,8 @@ private:
   InetAddress localAddr_;
 
   TcpConnectionCallback tcpConnectionCallback_;
-
+  MessageCallback messageCallback_; 
+  WriteCompleteCallback writeCompleteCallback_;
   // 管理连接
   std::unordered_map<int, TcpConnectionPtr> connections_;
 };
