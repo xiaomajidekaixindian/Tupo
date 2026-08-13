@@ -9,6 +9,11 @@ class EventLoop;
 class Acceptor;
 class TcpServer {
 public:
+  FRIEND_TEST(TcpServerTest, SendDataByString);
+  FRIEND_TEST(TcpServerTest, AcceptConnectionTest);
+  FRIEND_TEST(TcpServerTest, ServerMessageCallbackTest);
+  FRIEND_TEST(TcpServerTest, CloseRemoveConnectionTest);
+
   using TcpConnectionPtr = std::shared_ptr<TcpConnection>;
   using TcpConnectionCallback = std::function<void(const TcpConnectionPtr&)>;
   using MessageCallback = std::function<void(const TcpConnectionPtr&, Buffer&)>;
@@ -26,6 +31,11 @@ private:
   void onNewConnection(int sockfd, const InetAddress &peerAddr);
   void removeConnection(const TcpConnectionPtr & conn);
   void removeConnectionInLoop(const TcpConnectionPtr & conn);
+
+  // 测试用
+  void setConnectionCallback(TcpConnectionCallback cb){
+    tcpConnectionCallback_ = std::move(cb);
+  }
   bool isStart_;
   EventLoop *loop_;
   Acceptor acceptor_;

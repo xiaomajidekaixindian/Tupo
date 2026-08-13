@@ -7,9 +7,12 @@
 namespace Tupo {
 namespace net {
 
+class BufferTest;
+
 class Buffer{
 
 public:
+
   inline static constexpr size_t kCheapPrepend = 8;
   inline static constexpr size_t kInitialSize = 1024;
 
@@ -66,11 +69,13 @@ public:
     return buffer_.data();
   }
   
-private:
   // buffer空间大小
   size_t writableBytes() const {
     return buffer_.size() - writeIndex_;
   }
+
+
+private:
 
   // 扩容
   void makeSpace(size_t len);

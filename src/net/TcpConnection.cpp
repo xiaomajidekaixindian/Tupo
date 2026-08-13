@@ -67,13 +67,15 @@ void TcpConnection::send(const char *data, size_t len){
     }
 }
 
-void TcpConnection::send(const Buffer &buffer){
+void TcpConnection::send(Buffer &&buffer){
     if(state_== kConnected){
         if(loop_->isInLoopThread()){
             sendInLoop(buffer);
         }else{
-            loop_->runInLoop([this](buffer) {
-                this->sendInLoop(buffer);
+            // 跨线程：移动到堆上，用 shared_ptr 管理
+            auto data = std::make_shared<Buffer>(std::move(buffer));
+            loop_->runInLoop([this,data]{
+                this->sendInLoop(*data);
             });
         }
     }
@@ -117,7 +119,7 @@ void TcpConnection::sendInLoop(const char *data, size_t len){
     }
 }
 
-void TcpConnection::sendInLoop(Buffer buffer){
+void TcpConnection::sendInLoop(const Buffer &buffer){
      if(state_ == kDisconnected){
         std::cout<<"TcpConnection::sendInLoop - disconnected, give up writing"<<std::endl;
         return;
@@ -125,7 +127,7 @@ void TcpConnection::sendInLoop(Buffer buffer){
 
     ssize_t writable = 0;
     size_t remaining = buffer.readableBytes();
-    if(buffer.readableBytes() == 0){
+    if(outputBuffer_->readableBytes() == 0){
         writable = ::write(connfd_, buffer.readablePtr(), buffer.readableBytes());
         if(writable >= 0){
             remaining = buffer.readableBytes() - writable;
@@ -133,22 +135,22 @@ void TcpConnection::sendInLoop(Buffer buffer){
                 loop_->runInLoop([this]{
                     writeCompleteCallback_(shared_from_this());
                 });    
-            } else {
+            }
+        } else {
             // 真实出错
             if (errno != EAGAIN && errno != EWOULDBLOCK) {
                 return;
-            }
+        }
             writable = 0;
             remaining = buffer.readableBytes();
-        }
     }
+}
     if(remaining > 0){
         outputBuffer_ -> append(buffer.readablePtr() + writable, remaining);
         if(!channel_->isWriting()){
             channel_->enableWriting();
         }
     }
-}
 }
 
 void TcpConnection::shutdown(){

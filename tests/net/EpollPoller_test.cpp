@@ -46,6 +46,8 @@ TEST_F(EpollPollerTest, UpdateChannelModify) {
   // 修改为写事件
   EXPECT_NO_THROW(channel.enableWriting());
   ASSERT_TRUE(channel.isWriting());
+  // Channel 不拥有 fd，测试结束后必须手动关闭，否则 fd 泄漏
+  ::close(fd);
 }
 
 // 测试4：测试移除channel
@@ -56,6 +58,7 @@ TEST_F(EpollPollerTest, RemoveChannel) {
   channel.enableReading();
 
   EXPECT_NO_THROW(loop_->poller()->removeChannel(&channel));
+  ::close(fd);
 }
 
 // 测试5：测试轮询超时
@@ -93,6 +96,10 @@ TEST_F(EpollPollerTest, FindActiveChannels) {
 
   // 轮询事件
   loop_->poller()->poll(100, &activeChannels);
+
+  // Channel 不拥有 fd，测试结束后必须手动关闭，否则 fd 泄漏
+  ::close(fds[0]);
+  ::close(fds[1]);
 }
 
 // 测试7：测试多个 channels 的情况

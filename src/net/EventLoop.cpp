@@ -42,7 +42,10 @@ EventLoop::~EventLoop() {
     t_loopInThisThread = nullptr;
   }
   wakeupChannel_->remove();
-  ::close(wakeupChannel_->fd());
+  if (wakeupFd_ >= 0) {
+    ::close(wakeupFd_);
+    wakeupFd_ = -1;
+  }
 }
 
 void EventLoop::loop() {
@@ -94,38 +97,6 @@ void EventLoop::abortNotInLoopThread() {
             << " was created in threadId_ = " << threadId_
             << ", current thread id = "
             << Tupo::base::Thread::currentThreadTid();
-}
-
-void EventLoop::runInLoop(const Functor &cb) {
-  if (isInLoopThread()) {
-    cb();
-  } else {
-    queueInLoop(cb);
-  }
-}
-
-void EventLoop::runInLoop(Functor &&cb) {
-  if (isInLoopThread()) {
-    cb();
-  } else {
-    queueInLoop(std::move(cb));
-  }
-}
-
-void EventLoop::queueInLoop(const Functor &cb) {
-  {
-    Tupo::base::MutexLockGuard lock(mutex_);
-    pendingFunctors_.emplace_back(cb);
-  }
-  wakeup();
-}
-
-void EventLoop::queueInLoop(Functor &&cb) {
-  {
-    Tupo::base::MutexLockGuard lock(mutex_);
-    pendingFunctors_.push_back(std::move(cb));
-  }
-  wakeup();
 }
 
 void EventLoop::doPendingFunctors() {

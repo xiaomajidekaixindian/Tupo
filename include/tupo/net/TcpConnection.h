@@ -46,7 +46,7 @@ public:
   
   void send(const std::string &msg);
   void send(const char *data, size_t len);
-  void send(const Buffer &buffer);
+  void send(Buffer &&buffer);
 
   // 主动关闭
   void shutdown();
@@ -61,7 +61,7 @@ private:
 
   void sendInLoop(const std::string &msg);
   void sendInLoop(const char *data, size_t len);
-  void sendInLoop(Buffer buffer);
+  void sendInLoop(const Buffer &buffer);
   std::unique_ptr<Socket> socket_; 
   EventLoop *loop_;
   InetAddress localAddr_;

@@ -7,10 +7,23 @@ namespace net {
 
 Socket::Socket(int sockfd) : sockfd_(sockfd) {}
 
-void Socket::close() {
+Socket::~Socket() {
   if (sockfd_ >= 0) {
     ::close(sockfd_);
   }
+}
+
+void Socket::close() {
+  if (sockfd_ >= 0) {
+    ::close(sockfd_);
+    sockfd_ = -1;
+  }
+}
+
+int Socket::release() {
+  int fd = sockfd_;
+  sockfd_ = -1;
+  return fd;
 }
 
 void Socket::bind(const struct sockaddr *addr, socklen_t addrlen) {
@@ -93,7 +106,7 @@ void Socket::setKeepAlive(bool on) {
 }
 
 void Socket::shutdownWrite(){
-    if (sockfd_ > 0) {
+    if (sockfd_ >= 0) {
       if (::shutdown(sockfd_, SHUT_WR) < 0) {
           // 如果已经关闭了，忽略错误
           if (errno != ENOTCONN) {

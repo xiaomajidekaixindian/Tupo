@@ -6,7 +6,8 @@
 #include <fcntl.h>
 #include <sys/socket.h>
 
-using namespace Tupo::net;
+namespace Tupo{
+namespace net{
 
 class BufferTest : public ::testing::Test {
 protected:
@@ -270,4 +271,6 @@ TEST_F(BufferTest, ReadFdError) {
     
     EXPECT_LT(n, 0);
     EXPECT_EQ(savedErrno, EBADF);
+}
+}
 }

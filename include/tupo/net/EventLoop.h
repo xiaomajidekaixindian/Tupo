@@ -77,12 +77,24 @@ public:
 
   // 解决多线程环境下，非IO线程安全地向IO线程（即EventLoop所在线程）提交任务的同步问题
   using Functor = std::function<void()>;
-  void runInLoop(const Functor &cb);
-  void runInLoop(Functor &&cb);
 
-  // 投递到IO线程执行
-  void queueInLoop(const Functor &cb);
-  void queueInLoop(Functor &&cb);
+  template<typename T>
+  void runInLoop(T &&cb){
+    if(isInLoopThread()){
+        cb();
+    }else{
+        queueInLoop(std::forward<T>(cb));
+    }
+  }
+
+  template<typename T>  
+  void queueInLoop(T &&cb){
+    {
+        Tupo::base::MutexLockGuard lock(mutex_);
+        pendingFunctors_.emplace_back(std::forward<T>(cb));
+    }
+    wakeup();
+  }
 
   void doPendingFunctors(); // 执行回调函数
 private:
