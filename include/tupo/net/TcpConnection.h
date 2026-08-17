@@ -51,6 +51,16 @@ public:
   // 主动关闭
   void shutdown();
   void shutdownInLoop();
+
+  // 获取对端地址
+  const InetAddress getPeerAddress() const{
+    return peerAddr_;
+  }
+
+  // 获取连接状态
+  const State getState() const{
+    return state_;
+  }
 private:
   void handleRead();
   void handleWrite(); 

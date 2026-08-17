@@ -23,7 +23,7 @@ void Buffer::retrieveAll(){
     writeIndex_ = kCheapPrepend;
 }
 
-std::string Buffer::retrieveAsString(size_t len){
+const std::string Buffer::retrieveAsString(size_t len){
     if(len > readableBytes()){
         len = readableBytes();
     }
@@ -32,7 +32,7 @@ std::string Buffer::retrieveAsString(size_t len){
     return result;
 }
 
-std::string Buffer::retrieveAllAsString(){
+const std::string Buffer::retrieveAllAsString(){
     return retrieveAsString(readableBytes());
 }
 

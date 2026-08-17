@@ -36,8 +36,8 @@ public:
   // 读取数据（写入移动位置）
   void retrieve(size_t len);
   void retrieveAll();
-  std::string retrieveAsString(size_t len);
-  std::string retrieveAllAsString();
+  const std::string retrieveAsString(size_t len);
+  const std::string retrieveAllAsString();
 
 
   // 写入数据

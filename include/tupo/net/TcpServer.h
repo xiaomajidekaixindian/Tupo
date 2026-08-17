@@ -27,15 +27,22 @@ public:
   uint16_t toPort()const;
 
   std::string toIpPort()const;
+
+  // 用户用
+  void setConnectionCallback(TcpConnectionCallback cb){
+    tcpConnectionCallback_ = std::move(cb);
+  }
+  void setMessageCallback(MessageCallback cb){
+    messageCallback_ = std::move(cb); 
+  }
+  void setWriteCompleteCallback(WriteCompleteCallback cb){
+    writeCompleteCallback_ = std::move(cb);
+  }
 private:
   void onNewConnection(int sockfd, const InetAddress &peerAddr);
   void removeConnection(const TcpConnectionPtr & conn);
   void removeConnectionInLoop(const TcpConnectionPtr & conn);
 
-  // 测试用
-  void setConnectionCallback(TcpConnectionCallback cb){
-    tcpConnectionCallback_ = std::move(cb);
-  }
   bool isStart_;
   EventLoop *loop_;
   Acceptor acceptor_;
