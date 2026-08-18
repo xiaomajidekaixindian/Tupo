@@ -31,6 +31,7 @@ void Acceptor::listen() {
 void Acceptor::handleRead() {
   InetAddress peerAddr;
   int connfd = acceptSocket_.accept(&peerAddr);
+  std::cout<<"对端地址为："<<peerAddr.toIpPort()<<std::endl;
   // 处理新连接的逻辑，例如创建一个新的连接对象，注册到事件
   if(connfd >= 0){
     std::cout<<"有新连接到来！"<<std::endl;

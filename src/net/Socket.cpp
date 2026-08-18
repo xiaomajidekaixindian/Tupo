@@ -52,6 +52,9 @@ int Socket::accept(InetAddress *peerAddr) {
     // 可以抛出异常或者记录日志
     std::cerr << "Socket accept error: " << strerror(errno) << std::endl;
   }
+  if (connfd >= 0 && peerAddr) {
+      *peerAddr = InetAddress(*reinterpret_cast<struct sockaddr_in*>(&addr)); // 获取对端地址
+  }
   return connfd;
 }
 
