@@ -11,7 +11,7 @@ class InetAddress {
 public:
   // 服务器监听
   explicit InetAddress(uint16_t port = 0, bool loopbackOnly = false);
-  
+
   // 客户端指定服务器连接
   InetAddress(const std::string &ip, uint16_t port);
 
@@ -22,23 +22,30 @@ public:
   explicit InetAddress(const struct sockaddr_in6 &addr);
 
   // 获取原生sockaddr，留系统调用接口
-  const struct sockaddr *getSockAddr() const { return reinterpret_cast<const struct sockaddr *>(&addr_); }
-  struct sockaddr *getSockAddr() { return reinterpret_cast<struct sockaddr *>(&addr_); }
+  const struct sockaddr *getSockAddr() const {
+    return reinterpret_cast<const struct sockaddr *>(&addr_);
+  }
+  struct sockaddr *getSockAddr() {
+    return reinterpret_cast<struct sockaddr *>(&addr_);
+  }
 
   // 获取sockaddr_in
-  const struct sockaddr_in *getSockAddrIn() const { return reinterpret_cast<const struct sockaddr_in *>(&addr_); }
+  const struct sockaddr_in *getSockAddrIn() const {
+    return reinterpret_cast<const struct sockaddr_in *>(&addr_);
+  }
 
   // 获取ip字符串
-  std::string toIp()const;
+  std::string toIp() const;
 
   // 获取端口
-  uint16_t toPort()const;
+  uint16_t toPort() const;
 
   // 获取IP:Port
-  std::string toIpPort()const;
+  std::string toIpPort() const;
 
   // 获取ipv4长度
-  const socklen_t getLength() const{ return len_; } 
+  const socklen_t getLength() const { return len_; }
+
 private:
   struct sockaddr_storage addr_;
   socklen_t len_;
