@@ -64,4 +64,4 @@ std::string HttpResponse::serialize() const {
   return oss.str();
 }
 } // namespace net
-} // namespace tupo
+} // namespace Tupo

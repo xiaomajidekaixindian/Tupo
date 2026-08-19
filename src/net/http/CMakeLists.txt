@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.14)
 set(HTTP_SOURCES
     HttpRequest.cpp
     HttpResponse.cpp
+    HttpContext.cpp
 )
 
 # 创建 HTTP 子库

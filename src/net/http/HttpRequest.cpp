@@ -33,7 +33,7 @@ std::string HttpRequest::getHeader(const std::string &key) const {
 
 size_t HttpRequest::contentLength() const {
   std::string len = getHeader("Content-Length");
-  if(len.empty()){
+  if (len.empty()) {
     return 0;
   }
   return std::stoul(len);
