@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(tupo_tests)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 使用绝对路径
@@ -13,6 +13,7 @@ foreach(CHECK_PATH
     ${TUPO_INCLUDE_DIR}
     ${TUPO_BUILD_DIR}/libtupo_base.a
     ${TUPO_BUILD_DIR}/libtupo_net.a
+    ${TUPO_BUILD_DIR}/src/net/http/libtupo_http.a
 )
     if(NOT EXISTS ${CHECK_PATH})
         message(FATAL_ERROR "Required path not found: ${CHECK_PATH}")
@@ -38,6 +39,14 @@ set_target_properties(tupo_net PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${TUPO_INCLUDE_DIR}"  # 使用绝对路径
     INTERFACE_LINK_LIBRARIES tupo_base
 )
+
+add_library(tupo_http STATIC IMPORTED GLOBAL)
+set_target_properties(tupo_http PROPERTIES
+    IMPORTED_LOCATION ${TUPO_BUILD_DIR}/src/net/http/libtupo_http.a
+    INTERFACE_INCLUDE_DIRECTORIES "${TUPO_INCLUDE_DIR}"  # 使用绝对路径
+    INTERFACE_LINK_LIBRARIES "tupo_base;tupo_net"
+)
+
 
 # MutexLock 测试
 add_executable(mutexlock_test base/MutexLock_test.cpp)
@@ -106,3 +115,7 @@ target_link_libraries(TcpServer_test tupo_net GTest::gtest GTest::gtest_main Thr
 # Buffer单元测试
 add_executable(Buffer_test net/Buffer_test.cpp)
 target_link_libraries(Buffer_test tupo_net GTest::gtest GTest::gtest_main Threads::Threads)
+
+# HttpResponse单元测试
+add_executable(HttpResponse_test net/http/HttpResponse_test.cpp)
+target_link_libraries(HttpResponse_test tupo_net tupo_http GTest::gtest GTest::gtest_main Threads::Threads)

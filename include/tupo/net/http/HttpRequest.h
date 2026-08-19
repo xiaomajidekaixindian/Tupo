@@ -1,6 +1,7 @@
 #pragma once
-#include <unordered_map.hpp>
-
+#include <unordered_map>
+#include <cstddef>
+#include <string>
 namespace Tupo {
 namespace net {
 class HttpRequest {

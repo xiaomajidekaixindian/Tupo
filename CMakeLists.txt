@@ -1,3 +1,4 @@
+# CMakeLists.txt
 # 指定最低编译版本
 cmake_minimum_required(VERSION 3.14)
 project(Tupo)
@@ -34,5 +35,9 @@ add_library(tupo_net
 )
 # 如果网络库依赖基础库，添加链接
 target_link_libraries(tupo_net PUBLIC tupo_base)
+
 # 添加测试目录
 # add_subdirectory(tests)
+
+# 引入HTTP子模块
+add_subdirectory(src/net/http)
