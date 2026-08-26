@@ -94,7 +94,32 @@ net/ → Buffer.h → TcpServer.h → EventLoopThreadPool.h
 
 ![代码工作流程](.resource/image.png)
 
+### 将Channel 的文件描述符注册、修改或删除到 epoll 实例中
 
+```text
+用户代码
+    |
+    v
+channel->enableReading()
+    |
+    v    
+Channel::update()
+    |
+    v
+loop_->updateChannel(this)
+    |
+    v
+EPollPoller::updateChannel(channel)
+    |
+    v
+poller_->updateChannel(channel)
+    |
+    v
+EPollPoller::update(operation, channel)
+    |
+    v
+epoll_ctl(epollfd_, operation, fd, &event)  ← 系统调用
+```
 
 ### TimerQueue
 
