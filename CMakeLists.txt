@@ -5,12 +5,37 @@ project(Tupo)
 
 option(ENABLE_DEBUG "Enable debug mode for test functions" OFF)
 
+# ========== 构建类型设置 ==========
+# 默认使用 Release 模式
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
+    message(STATUS "📦 Default build type: Release")
+endif()
+
+message(STATUS "🔧 Build type: ${CMAKE_BUILD_TYPE}")
+
+# ========== DEBUG 宏控制 ==========
+option(ENABLE_DEBUG "Enable debug mode for test functions" OFF)
+
 if(ENABLE_DEBUG)
     add_compile_definitions(DEBUG)
-    message(STATUS "🔧 Debug mode: ENABLED (test functions visible)")
+    # Debug 模式下，设置 CMAKE_BUILD_TYPE 为 Debug
+    if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
+        message(STATUS "🔧 Debug mode: ENABLED (switched to Debug build)")
+    endif()
+    message(STATUS "🔧 Test functions: VISIBLE")
 else()
-    message(STATUS "🚀 Debug mode: DISABLED (test functions hidden)")
+    # Release 模式下，确保没有 DEBUG 宏
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
+        message(STATUS "🚀 Debug mode: DISABLED (switched to Release build)")
+    endif()
+    message(STATUS "🚀 Test functions: HIDDEN")
 endif()
+
+option(BUILD_HTTP_TESTS "Build HTTP tests" OFF)  # ✅ 在这里定义
+
 
 # 设置C++17标准
 set(CMAKE_CXX_STANDARD 17)

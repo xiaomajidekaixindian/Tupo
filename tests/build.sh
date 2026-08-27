@@ -126,10 +126,4 @@ echo -e "${GREEN}========================================${NC}"
 echo -e "${GREEN} ✅ 主库位置: ${MAIN_BUILD_DIR}/libtupo_*.a${NC}"
 echo -e "${GREEN} ✅ 测试位置: ${TEST_BUILD_DIR}/*_test${NC}"
 
-if [ "$DEBUG_MODE" == "ON" ]; then
-    echo -e "${YELLOW} ⚠️  当前为 DEBUG 模式${NC}"
-    echo -e "${YELLOW}    - HttpContext 中的测试函数可见${NC}"
-else
-    echo -e "${GREEN} ✅ 当前为 Release 模式（测试函数隐藏）${NC}"
-fi
 echo -e "${GREEN}========================================${NC}"
