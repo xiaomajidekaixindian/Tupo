@@ -1,18 +1,16 @@
 #include "tupo/net/Channel.h"
 #include "tupo/net/EventLoop.h"
+#include "tupo/net/Socket.h"
 #include "tupo/net/poller/EpollPoller.h"
 #include <fcntl.h>
 #include <gtest/gtest.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include "tupo/net/Socket.h"
 namespace Tupo {
 namespace net {
 class EpollPollerTest : public ::testing::Test {
 protected:
-  void SetUp() override {
-    loop_ = new EventLoop();
-  }
+  void SetUp() override { loop_ = new EventLoop(); }
   void TearDown() override { delete loop_; }
   EventLoop *loop_;
   int createNonBlockingSocket() {
@@ -145,9 +143,9 @@ TEST_F(EpollPollerTest, HighLoadChannels) {
   const int kHighLoadCount = 100; // 测试100个channels
   std::vector<int> fds;
   std::vector<Channel *> channels;
+
   // 创建大量channels
   for (int i = 0; i < kHighLoadCount; ++i) {
-    // tcp_poll() 对 TCP_CLOSE 状态的 socket 会无条件置 EPOLLHUP 事件位
     int fd = createNonBlockingSocket();
     fds.push_back(fd);
 
@@ -158,12 +156,59 @@ TEST_F(EpollPollerTest, HighLoadChannels) {
     // 验证添加成功
     EXPECT_TRUE(channel->isReading());
   }
-  // 测试轮询空事件（应该超时）
+
+  // 测试轮询 - 应该触发错误事件
   Poller::ChannelList activeChannels;
   loop_->poller()->poll(100, &activeChannels);
 
-  // 不为空
-  EXPECT_TRUE(activeChannels.empty());
+  // 期望有事件触发（都是错误事件）
+  EXPECT_FALSE(activeChannels.empty());
+
+  // 验证所有触发的事件都是错误事件
+  int errorCount = 0;
+  int hupCount = 0;
+  int inCount = 0;
+  int outCount = 0;
+
+  for (auto channel : activeChannels) {
+    int revents = channel->revents();
+
+    // 统计各种事件
+    if (revents & EPOLLERR)
+      errorCount++;
+    if (revents & EPOLLHUP)
+      hupCount++;
+    if (revents & EPOLLIN)
+      inCount++;
+    if (revents & EPOLLOUT)
+      outCount++;
+
+    // 验证：每个活跃的 channel 都应该有错误或挂起事件
+    EXPECT_TRUE(revents & (EPOLLERR | EPOLLHUP))
+        << "Channel with revents=" << revents
+        << " should have EPOLLERR or EPOLLHUP";
+
+    // 验证：不应该有正常的读写事件
+    EXPECT_FALSE(revents & EPOLLIN)
+        << "Should not have EPOLLIN for unconnected socket, got revents="
+        << revents;
+    EXPECT_FALSE(revents & EPOLLOUT)
+        << "Should not have EPOLLOUT for unconnected socket, got revents="
+        << revents;
+  }
+
+  // 打印统计信息（便于调试）
+  std::cout << "Active channels: " << activeChannels.size() << std::endl;
+  std::cout << "EPOLLERR count: " << errorCount << std::endl;
+  std::cout << "EPOLLHUP count: " << hupCount << std::endl;
+  std::cout << "EPOLLIN count: " << inCount << std::endl;
+  std::cout << "EPOLLOUT count: " << outCount << std::endl;
+
+  // 验证：所有活跃事件都是错误或挂起事件
+  EXPECT_EQ(errorCount + hupCount, activeChannels.size())
+      << "All active events should be EPOLLERR or EPOLLHUP";
+  EXPECT_EQ(inCount, 0) << "No EPOLLIN events should occur";
+  EXPECT_EQ(outCount, 0) << "No EPOLLOUT events should occur";
 
   // 清理资源 - 测试批量移除
   for (size_t i = 0; i < channels.size(); ++i) {
@@ -182,7 +227,7 @@ TEST_F(EpollPollerTest, TcpNoDelayActuallySet) {
   int on = 0;
   socklen_t len = sizeof(on);
   ASSERT_EQ(getsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &on, &len), 0);
-  EXPECT_EQ(on, 1);  // 真正读到内核里设置的 1
+  EXPECT_EQ(on, 1); // 真正读到内核里设置的 1
 
   sock.setTcpNoDelay(false);
   ASSERT_EQ(getsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &on, &len), 0);
