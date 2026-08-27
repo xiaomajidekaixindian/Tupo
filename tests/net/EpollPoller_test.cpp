@@ -5,12 +5,14 @@
 #include <gtest/gtest.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
+#include "tupo/net/Socket.h"
 namespace Tupo {
 namespace net {
 class EpollPollerTest : public ::testing::Test {
 protected:
-  void SetUp() override { loop_ = new EventLoop(); }
+  void SetUp() override {
+    loop_ = new EventLoop();
+  }
   void TearDown() override { delete loop_; }
   EventLoop *loop_;
   int createNonBlockingSocket() {
@@ -145,6 +147,7 @@ TEST_F(EpollPollerTest, HighLoadChannels) {
   std::vector<Channel *> channels;
   // 创建大量channels
   for (int i = 0; i < kHighLoadCount; ++i) {
+    // tcp_poll() 对 TCP_CLOSE 状态的 socket 会无条件置 EPOLLHUP 事件位
     int fd = createNonBlockingSocket();
     fds.push_back(fd);
 
@@ -158,6 +161,8 @@ TEST_F(EpollPollerTest, HighLoadChannels) {
   // 测试轮询空事件（应该超时）
   Poller::ChannelList activeChannels;
   loop_->poller()->poll(100, &activeChannels);
+
+  // 不为空
   EXPECT_TRUE(activeChannels.empty());
 
   // 清理资源 - 测试批量移除
@@ -166,6 +171,22 @@ TEST_F(EpollPollerTest, HighLoadChannels) {
     delete channels[i];
     ::close(fds[i]);
   }
+}
+
+// 测试10：测试fd内核状态
+TEST_F(EpollPollerTest, TcpNoDelayActuallySet) {
+  int fd = createNonBlockingSocket();
+  Tupo::net::Socket sock(fd);
+  sock.setTcpNoDelay(true);
+
+  int on = 0;
+  socklen_t len = sizeof(on);
+  ASSERT_EQ(getsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &on, &len), 0);
+  EXPECT_EQ(on, 1);  // 真正读到内核里设置的 1
+
+  sock.setTcpNoDelay(false);
+  ASSERT_EQ(getsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &on, &len), 0);
+  EXPECT_EQ(on, 0);
 }
 } // namespace net
 } // namespace Tupo
