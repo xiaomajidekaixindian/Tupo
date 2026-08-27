@@ -3,6 +3,15 @@
 cmake_minimum_required(VERSION 3.14)
 project(Tupo)
 
+option(ENABLE_DEBUG "Enable debug mode for test functions" OFF)
+
+if(ENABLE_DEBUG)
+    add_compile_definitions(DEBUG)
+    message(STATUS "🔧 Debug mode: ENABLED (test functions visible)")
+else()
+    message(STATUS "🚀 Debug mode: DISABLED (test functions hidden)")
+endif()
+
 # 设置C++17标准
 set(CMAKE_CXX_STANDARD 17)
 

@@ -1,7 +1,7 @@
 #pragma once
-#include <unordered_map>
 #include <cstddef>
 #include <string>
+#include <unordered_map>
 namespace Tupo {
 namespace net {
 class HttpRequest {
@@ -58,6 +58,7 @@ public:
   // 获取 Content-Length
   size_t contentLength() const;
 
+  
 private:
   Method method_;
   ParseState parseState_;
@@ -65,6 +66,14 @@ private:
   std::string path_;
   std::string version_;
   std::string body_;
+
+#ifdef DEBUG
+public:
+  size_t contentLength_;
+  void setContentLength(size_t contentLength){
+    contentLength_ = contentLength;
+  }
+#endif
 };
 } // namespace net
 } // namespace Tupo

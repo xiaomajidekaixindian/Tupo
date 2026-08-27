@@ -4,6 +4,19 @@ project(tupo_tests)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# 如果父项目没有定义，默认 OFF
+if(NOT DEFINED ENABLE_DEBUG)
+    option(ENABLE_DEBUG "Enable debug mode for test functions" OFF)
+endif()
+
+# 将 ENABLE_DEBUG 传递给所有测试目标
+if(ENABLE_DEBUG)
+    add_compile_definitions(DEBUG)
+    message(STATUS "🔧 Test DEBUG mode: ENABLED (private functions visible)")
+else()
+    message(STATUS "🚀 Test DEBUG mode: DISABLED (private functions hidden)")
+endif()
+
 # 使用绝对路径
 get_filename_component(TUPO_INCLUDE_DIR "../include" ABSOLUTE)
 get_filename_component(TUPO_BUILD_DIR "../build" ABSOLUTE)
@@ -119,3 +132,7 @@ target_link_libraries(Buffer_test tupo_net GTest::gtest GTest::gtest_main Thread
 # HttpResponse单元测试
 add_executable(HttpResponse_test net/http/HttpResponse_test.cpp)
 target_link_libraries(HttpResponse_test tupo_net tupo_http GTest::gtest GTest::gtest_main Threads::Threads)
+
+# HttpContext单元测试
+add_executable(HttpContext_test net/http/HttpContext_test.cpp)
+target_link_libraries(HttpContext_test tupo_net tupo_http GTest::gtest GTest::gtest_main Threads::Threads)

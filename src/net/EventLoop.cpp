@@ -32,6 +32,7 @@ EventLoop::EventLoop()
     t_loopInThisThread = this;
     std::cout << "EventLoop created in thread " << threadId_ << std::endl;
   }
+  // 跨线程唤醒
   wakeupChannel_->setReadCallback([this]() { this->handleRead(); });
   wakeupChannel_->enableReading();
 };
@@ -41,7 +42,7 @@ EventLoop::~EventLoop() {
   if (t_loopInThisThread == this) {
     t_loopInThisThread = nullptr;
   }
-  wakeupChannel_->remove();
+  wakeupChannel_->remove();  
   if (wakeupFd_ >= 0) {
     ::close(wakeupFd_);
     wakeupFd_ = -1;
