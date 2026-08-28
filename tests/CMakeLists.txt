@@ -77,16 +77,11 @@ target_link_libraries(pollpoller_test tupo_net GTest::gtest GTest::gtest_main Th
 add_executable(epollpoller_test net/EpollPoller_test.cpp)
 target_link_libraries(epollpoller_test tupo_net GTest::gtest GTest::gtest_main Threads::Threads)
 
-# Timestamp测试 - 根据实际情况调整路径
-if(EXISTS base/Timestamp_test.cpp)
-    add_executable(timestamp_test base/Timestamp_test.cpp)
-    target_link_libraries(timestamp_test tupo_base GTest::gtest GTest::gtest_main Threads::Threads)
-elseif(EXISTS net/Timestamp_test.cpp)
-    add_executable(timestamp_test net/Timestamp_test.cpp)
-    target_link_libraries(timestamp_test tupo_base GTest::gtest GTest::gtest_main Threads::Threads)
-else()
-    message(WARNING "Timestamp_test.cpp not found, skipping timestamp_test")
-endif()
+
+# Timestamp测试
+add_executable(timestamp_test base/Timestamp_test.cpp)
+target_link_libraries(timestamp_test tupo_base tupo_net GTest::gtest GTest::gtest_main Threads::Threads)
+
 
 # Timer测试
 add_executable(timer_test net/Timer_test.cpp)
