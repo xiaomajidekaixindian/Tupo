@@ -60,9 +60,10 @@ bool HttpContext::ParseRequest(Buffer *buffer, HttpRequest *request) {
     // size_t bodyLen = buffer->readableBytes();
     default:
       // 未知情况
-      break;
+      return false;
     }
   }
+  return true;
 }
 
 bool HttpContext::processRequestLine(const char *begin, const char *end,

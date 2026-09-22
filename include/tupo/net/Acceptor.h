@@ -10,7 +10,6 @@ public:
   // 新连接，传递给TcpServer，来创建TcpConnection对象
   using NewConnectionCallback = std::function<void(int sockfd, const InetAddress &)>;
 
-
   Acceptor(EventLoop *loop,const InetAddress &addr);
   
   // 监听

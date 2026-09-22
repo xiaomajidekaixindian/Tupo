@@ -46,7 +46,7 @@ private:
   void removeConnectionInLoop(const TcpConnectionPtr &conn);
 
   bool isStart_;
-  EventLoop *loop_;
+  EventLoop *mainLoop_;
   Acceptor acceptor_;
   InetAddress localAddr_;
 
