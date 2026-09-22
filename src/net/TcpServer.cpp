@@ -6,7 +6,7 @@ namespace Tupo {
 namespace net {
 
 TcpServer::TcpServer(EventLoop *loop, const InetAddress &listenAddr)
-    : isStart_(false), loop_(loop), acceptor_(loop, listenAddr),
+    : isStart_(false), mainLoop_(loop), acceptor_(loop, listenAddr),
       localAddr_(listenAddr) {
   acceptor_.setNewConnectionCallback(
       [this](int connfd, const InetAddress &peerAddr) {
@@ -28,7 +28,7 @@ std::string TcpServer::toIpPort() const { return localAddr_.toIpPort(); }
 
 void TcpServer::onNewConnection(int connfd, const InetAddress &peerAddr) {
   auto conn =
-      std::make_shared<TcpConnection>(connfd, loop_, localAddr_, peerAddr);
+      std::make_shared<TcpConnection>(connfd, mainLoop_, localAddr_, peerAddr);
 
   conn->setConnectionCallback(tcpConnectionCallback_);
   conn->setMessageCallback(messageCallback_);
@@ -42,7 +42,7 @@ void TcpServer::onNewConnection(int connfd, const InetAddress &peerAddr) {
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr &conn) {
-  loop_->runInLoop([this, conn] { removeConnectionInLoop(conn); });
+  mainLoop_->runInLoop([this, conn] { removeConnectionInLoop(conn); });
 }
 
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn) {
