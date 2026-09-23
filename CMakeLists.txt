@@ -46,7 +46,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 # 创建基础库 - 显式列出所有源文件
 add_library(tupo_base
     src/base/MutexLock.cpp
-    src/base/Condition.cpp   
     src/base/Thread.cpp
     src/base/Timestamp.cpp
 )
@@ -66,6 +65,7 @@ add_library(tupo_net
     src/net/TcpConnection.cpp
     src/net/TcpServer.cpp
     src/net/Buffer.cpp
+    src/net/EventLoopThread.cpp
 )
 # 如果网络库依赖基础库，添加链接
 target_link_libraries(tupo_net PUBLIC tupo_base)
