@@ -2,6 +2,8 @@
 #include "tupo/base/MutexLock.h"
 #include "tupo/base/Thread.h"
 #include <condition_variable>
+#include <functional>
+
 namespace Tupo {
 namespace net {
 class EventLoop;
