@@ -20,6 +20,11 @@ private:
   Tupo::net::TcpServer server_{loop_, addr_};
 };
 
+void outName() {
+  std::cout << "task running in thread: " << std::this_thread::get_id()
+            << std::endl;
+}
+
 int main() {
   std::cout << "caller thread: " << std::this_thread::get_id() << std::endl;
 
@@ -30,8 +35,7 @@ int main() {
 
   // 在这个 EventLoop 上跑一个任务
   loop->runInLoop([&]() {
-    std::cout << "task running in thread: " << std::this_thread::get_id()
-              << std::endl;
+      outName();
   });
 
   // 等任务执行完

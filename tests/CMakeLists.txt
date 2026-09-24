@@ -135,3 +135,7 @@ target_link_libraries(HttpContext_test tupo_net tupo_http GTest::gtest GTest::gt
 # EventLoopThread单元测试
 add_executable(EventLoopThread_test net/eventloopthread/EventLoopThread_test.cpp)
 target_link_libraries(EventLoopThread_test tupo_net tupo_http GTest::gtest GTest::gtest_main Threads::Threads)
+
+# EventLoopThreadPool单元测试
+add_executable(EventLoopThreadPool_test net/eventloopthread/EventLoopThreadPool_test.cpp)
+target_link_libraries(EventLoopThreadPool_test tupo_net tupo_http GTest::gtest GTest::gtest_main Threads::Threads)

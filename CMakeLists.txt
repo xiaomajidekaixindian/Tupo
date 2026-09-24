@@ -66,6 +66,7 @@ add_library(tupo_net
     src/net/TcpServer.cpp
     src/net/Buffer.cpp
     src/net/EventLoopThread.cpp
+    src/net/EventLoopThreadPool.cpp
 )
 # 如果网络库依赖基础库，添加链接
 target_link_libraries(tupo_net PUBLIC tupo_base)
