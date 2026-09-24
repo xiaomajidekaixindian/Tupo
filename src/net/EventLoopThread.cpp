@@ -7,18 +7,23 @@ namespace net {
 EventLoopThread::EventLoopThread()
     : exiting_(false), thread_([this]() { threadFunc(); }), loop_(nullptr) {}
 
-EventLoopThread::EventLoopThread(ThreadFunc func)
+EventLoopThread::EventLoopThread(ThreadFunc threadInitFunc)
     : exiting_(false), thread_([this]() { threadFunc(); }), loop_(nullptr),
-      func_(func) {}
+      threadInitFunc_(threadInitFunc) {}
 
-EventLoopThread::EventLoopThread(ThreadFunc func, const std::string &name)
+EventLoopThread::EventLoopThread(ThreadFunc threadInitFunc,
+                                 const std::string &name)
     : exiting_(false), thread_([this]() { threadFunc(); }), loop_(nullptr),
-      func_(func), name_(name) {}
+      threadInitFunc_(threadInitFunc), name_(name) {}
 
 EventLoopThread::~EventLoopThread() {
   exiting_ = true;
-  if (loop_ != nullptr)
-    loop_->quit();                              // 先叫停
+  {
+    Tupo::base::MutexLockGuard lock(mutex_);
+    if (loop_ != nullptr) {
+      loop_->quit();
+    }
+  }
   if (thread_.started() && !thread_.joined()) { // 启动过就必须 join
     thread_.join();
   }
@@ -37,8 +42,8 @@ EventLoop *EventLoopThread::startLoop() {
 
 void EventLoopThread::threadFunc() {
   EventLoop loop;
-  if (func_) {
-    func_(&loop);
+  if (threadInitFunc_) {
+    threadInitFunc_(&loop);
   }
 
   {
@@ -48,6 +53,10 @@ void EventLoopThread::threadFunc() {
   cond_.notify_one();
 
   loop.loop();
+  {
+    Tupo::base::MutexLockGuard lock(mutex_);
+    loop_ = nullptr;
+  }
 }
 } // namespace net
 } // namespace Tupo

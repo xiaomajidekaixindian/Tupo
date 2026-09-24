@@ -10,10 +10,10 @@ class EventLoop;
 class EventLoopThread {
 public:
   using ThreadFunc = std::function<void(EventLoop *)>;
-  EventLoopThread();
-  EventLoopThread(ThreadFunc func);
-  EventLoopThread(ThreadFunc func, const std::string &name);
-  EventLoopThread(const EventLoopThread &) = delete;
+  explicit EventLoopThread();
+  explicit EventLoopThread(ThreadFunc threadInitFunc);
+  explicit EventLoopThread(ThreadFunc threadInitFunc, const std::string &name);
+  explicit EventLoopThread(const EventLoopThread &) = delete;
   EventLoopThread &operator=(const EventLoopThread &) = delete;
   EventLoopThread(EventLoopThread &&other) = delete;
   EventLoopThread &operator=(EventLoopThread &&other) = delete;
@@ -28,7 +28,7 @@ private:
   bool exiting_;
   Tupo::base::Thread thread_;
   EventLoop *loop_;
-  ThreadFunc func_;
+  ThreadFunc threadInitFunc_;
   std::string name_;
 };
 } // namespace net
