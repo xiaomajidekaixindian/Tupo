@@ -5,9 +5,11 @@
 namespace Tupo {
 namespace net {
 
-TcpServer::TcpServer(EventLoop *loop, const InetAddress &listenAddr)
+TcpServer::TcpServer(EventLoop *loop, const InetAddress &listenAddr,
+                     int threadNums_)
     : isStart_(false), mainLoop_(loop), acceptor_(loop, listenAddr),
-      localAddr_(listenAddr) {
+      localAddr_(listenAddr), threadNums_(threadNums_),
+      threadPool_(loop, threadNums_) {
   acceptor_.setNewConnectionCallback(
       [this](int connfd, const InetAddress &peerAddr) {
         this->onNewConnection(connfd, peerAddr);
@@ -16,6 +18,7 @@ TcpServer::TcpServer(EventLoop *loop, const InetAddress &listenAddr)
 void TcpServer::start() {
   if (!isStart_) {
     isStart_ = true;
+    threadPool_.start();
     acceptor_.listen();
   }
 }
@@ -27,8 +30,10 @@ uint16_t TcpServer::toPort() const { return localAddr_.toPort(); }
 std::string TcpServer::toIpPort() const { return localAddr_.toIpPort(); }
 
 void TcpServer::onNewConnection(int connfd, const InetAddress &peerAddr) {
+  auto subLoop = threadPool_.getNextLoop();
+
   auto conn =
-      std::make_shared<TcpConnection>(connfd, mainLoop_, localAddr_, peerAddr);
+      std::make_shared<TcpConnection>(connfd, subLoop, localAddr_, peerAddr);
 
   conn->setConnectionCallback(tcpConnectionCallback_);
   conn->setMessageCallback(messageCallback_);
@@ -38,7 +43,7 @@ void TcpServer::onNewConnection(int connfd, const InetAddress &peerAddr) {
   connections_[connfd] = conn;
 
   // 启动连接
-  conn->connectEstablished();
+  subLoop->runInLoop([conn] { conn->connectEstablished(); });
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr &conn) {
@@ -48,7 +53,7 @@ void TcpServer::removeConnection(const TcpConnectionPtr &conn) {
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn) {
   size_t n = connections_.erase(conn->getFd());
   if (n > 0) {
-    conn->connectDestroyed();
+    conn->getLoop()->runInLoop([conn] { conn->connectDestroyed(); });
   }
 }
 

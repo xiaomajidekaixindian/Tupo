@@ -1,11 +1,11 @@
 #pragma once
+#include "tupo/net/Buffer.h"
+#include "tupo/net/Channel.h"
+#include "tupo/net/InetAddress.h"
+#include "tupo/net/Socket.h"
+#include <functional>
 #include <gtest/gtest_prod.h>
 #include <memory>
-#include <functional>
-#include "tupo/net/Socket.h"
-#include "tupo/net/InetAddress.h"
-#include "tupo/net/Channel.h"
-#include "tupo/net/Buffer.h"
 
 namespace Tupo {
 namespace net {
@@ -17,33 +17,40 @@ public:
 
   using TcpConnectionPtr = std::shared_ptr<TcpConnection>;
   using TcpConnectionCallback = std::function<void(const TcpConnectionPtr &)>;
-  using MessageCallback = std::function<void(const TcpConnectionPtr &, Buffer &)>;
+  using MessageCallback =
+      std::function<void(const TcpConnectionPtr &, Buffer &)>;
   using WriteCompleteCallback = std::function<void(const TcpConnectionPtr &)>;
   using CloseCallback = std::function<void(const TcpConnectionPtr &)>;
 
   // 连接状态
   enum State {
-      kDisconnected,      // 已断开连接
-      kConnecting,        // 正在连接
-      kConnected,         // 已连接
-      kDisconnecting       // 正在断开连接  
+    kDisconnected, // 已断开连接
+    kConnecting,   // 正在连接
+    kConnected,    // 已连接
+    kDisconnecting // 正在断开连接
   };
 
-  TcpConnection(int sockfd, EventLoop *loop ,const InetAddress &localAddr, const InetAddress &peerAddr);
+  TcpConnection(int sockfd, EventLoop *loop, const InetAddress &localAddr,
+                const InetAddress &peerAddr);
 
   // 连接与销毁
   void connectEstablished();
   void connectDestroyed();
 
-  void setConnectionCallback(TcpConnectionCallback cb) { tcpConnectionCallback_ = std::move(cb); }
+  void setConnectionCallback(TcpConnectionCallback cb) {
+    tcpConnectionCallback_ = std::move(cb);
+  }
   void setCloseCallback(CloseCallback cb) { closeCallback_ = std::move(cb); }
-  void setMessageCallback(MessageCallback cb) { messageCallback_ = std::move(cb); }
-  void setWriteCompleteCallback(WriteCompleteCallback cb) { writeCompleteCallback_ = std::move(cb); }
-
+  void setMessageCallback(MessageCallback cb) {
+    messageCallback_ = std::move(cb);
+  }
+  void setWriteCompleteCallback(WriteCompleteCallback cb) {
+    writeCompleteCallback_ = std::move(cb);
+  }
 
   // 返回当前连接文件描述符
-  const int getFd(){ return channel_->fd(); };
-  
+  const int getFd() { return channel_->fd(); };
+
   void send(const std::string &msg);
   void send(const char *data, size_t len);
   void send(Buffer &&buffer);
@@ -53,17 +60,16 @@ public:
   void shutdownInLoop();
 
   // 获取对端地址
-  const InetAddress getPeerAddress() const{
-    return peerAddr_;
-  }
+  const InetAddress getPeerAddress() const { return peerAddr_; }
 
   // 获取连接状态
-  const State getState() const{
-    return state_;
-  }
+  const State getState() const { return state_; }
+
+  EventLoop *getLoop();
+
 private:
   void handleRead();
-  void handleWrite(); 
+  void handleWrite();
   void handleError();
   void handleClose(); // 被动关闭
 
@@ -72,7 +78,7 @@ private:
   void sendInLoop(const std::string &msg);
   void sendInLoop(const char *data, size_t len);
   void sendInLoop(const Buffer &buffer);
-  std::unique_ptr<Socket> socket_; 
+  std::unique_ptr<Socket> socket_;
   EventLoop *loop_;
   InetAddress localAddr_;
   InetAddress peerAddr_;
@@ -88,5 +94,5 @@ private:
   WriteCompleteCallback writeCompleteCallback_;
   CloseCallback closeCallback_;
 };
-}
-}
+} // namespace net
+} // namespace Tupo

@@ -1,5 +1,6 @@
 #pragma once
 #include "tupo/net/Acceptor.h"
+#include "tupo/net/EventLoopThreadPool.h"
 #include "tupo/net/InetAddress.h"
 #include "tupo/net/TcpConnection.h"
 #include <unordered_map>
@@ -19,7 +20,7 @@ public:
   using MessageCallback =
       std::function<void(const TcpConnectionPtr &, Buffer &)>;
   using WriteCompleteCallback = std::function<void(const TcpConnectionPtr &)>;
-  TcpServer(EventLoop *loop, const InetAddress &addr);
+  TcpServer(EventLoop *loop, const InetAddress &addr, int threadNums_ = 0);
 
   void start();
 
@@ -53,6 +54,9 @@ private:
   TcpConnectionCallback tcpConnectionCallback_;
   MessageCallback messageCallback_;
   WriteCompleteCallback writeCompleteCallback_;
+
+  EventLoopThreadPool threadPool_;
+  int threadNums_;
   // 管理连接
   std::unordered_map<int, TcpConnectionPtr> connections_;
 };
