@@ -12,7 +12,6 @@ public:
   void reset();
 
 private:
-
   HttpRequest::ParseState state_;
 
 #ifdef NDEBUG
@@ -22,14 +21,13 @@ private:
   bool processBody(const char *begin, const char *end, HttpRequest *request);
 #endif
 
-#ifdef DEBUG
+#ifdef TUPO_DEBUG
 public:
   bool processRequestLine(const char *begin, const char *end,
                           HttpRequest *request);
   bool processHeaders(const char *begin, const char *end, HttpRequest *request);
   bool processBody(const char *begin, const char *end, HttpRequest *request);
 #endif
-
 };
 } // namespace net
 } // namespace Tupo

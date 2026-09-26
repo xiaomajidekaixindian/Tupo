@@ -18,7 +18,7 @@ message(STATUS "🔧 Build type: ${CMAKE_BUILD_TYPE}")
 option(ENABLE_DEBUG "Enable debug mode for test functions" OFF)
 
 if(ENABLE_DEBUG)
-    add_compile_definitions(DEBUG)
+    add_compile_definitions(TUPO_DEBUG)
     # Debug 模式下，设置 CMAKE_BUILD_TYPE 为 Debug
     if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
@@ -48,6 +48,8 @@ add_library(tupo_base
     src/base/MutexLock.cpp
     src/base/Thread.cpp
     src/base/Timestamp.cpp
+    src/base/LogStream.cpp
+    src/base/Logger.cpp
 )
 
 # 创建网络库    
