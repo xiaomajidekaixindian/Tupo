@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <string>
 
 namespace Tupo {
 namespace base {
@@ -19,12 +20,14 @@ public:
   static Timestamp invalid() { return Timestamp(); }
 
   static const int kMicroSecondsPerSecond = 1000 * 1000;
-  
+
   int64_t microSecondsSinceEpoch() const { return microSecondsSinceEpoch_; }
 
   bool operator<(const Timestamp &rhs) const {
     return microSecondsSinceEpoch_ < rhs.microSecondsSinceEpoch_;
   }
+
+  std::string toFormattedString(bool showMicroseconds = true) const;
 
 private:
   int64_t microSecondsSinceEpoch_;

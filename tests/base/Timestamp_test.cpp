@@ -1,3 +1,4 @@
+#include "tupo/base/Logger.h"
 #include "tupo/base/Timestamp.h"
 #include <chrono>
 #include <gtest/gtest.h>
@@ -50,4 +51,12 @@ TEST_F(TimestampTest, resetTimeMethod) {
   double interval = 3.0;
   Tupo::base::Timestamp time = Tupo::base::Timestamp::resetTime(ts, interval);
   std::cout << "3秒后时间为:" << time.microSecondsSinceEpoch() << std::endl;
+}
+
+// 测试4：测试格式化输出
+TEST_F(TimestampTest, toFormattedStringMethod) {
+  auto ts = Tupo::base::Timestamp::now();
+  std::string formatted = ts.toFormattedString();
+  LOG_INFO << "当前时间戳格式化输出为:" << formatted;
+  EXPECT_FALSE(formatted.empty());
 }
