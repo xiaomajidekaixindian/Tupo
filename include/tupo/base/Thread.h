@@ -9,6 +9,7 @@
 #include <unistd.h>
 namespace Tupo {
 namespace base {
+
 class Thread {
 public:
   using ThreadFunc = std::function<void()>;
@@ -29,6 +30,7 @@ public:
   bool detached() { return detached_; }
   static pid_t currentThreadTid(); // 获取当前线程id
   const std::string &name() { return name_; }
+
 private:
   std::atomic<bool> started_;
   std::atomic<bool> joined_;

@@ -5,7 +5,7 @@
 #include <sys/eventfd.h>
 namespace Tupo {
 namespace net {
-__thread EventLoop *t_loopInThisThread = nullptr;
+
 namespace {
 
 const int kPollTimeMs = 10000;
@@ -17,6 +17,8 @@ int createEventfd() {
   }
   return evtfd;
 }
+
+thread_local EventLoop *t_loopInThisThread = nullptr;
 
 } // namespace
 EventLoop::EventLoop()
@@ -42,7 +44,7 @@ EventLoop::~EventLoop() {
   if (t_loopInThisThread == this) {
     t_loopInThisThread = nullptr;
   }
-  wakeupChannel_->remove();  
+  wakeupChannel_->remove();
   if (wakeupFd_ >= 0) {
     ::close(wakeupFd_);
     wakeupFd_ = -1;
@@ -77,6 +79,8 @@ void EventLoop::quit() {
     wakeup();
   }
 }
+
+EventLoop *EventLoop::getEventLoopOfCurrent() { return t_loopInThisThread; }
 
 void EventLoop::updateChannel(Channel *channel) {
   // 1. 关键：确保在IO线程中调用

@@ -1,4 +1,6 @@
 #include "tupo/base/Logger.h"
+#include "tupo/base/Thread.h"
+#include "tupo/base/Timestamp.h"
 
 namespace Tupo {
 namespace base {
@@ -10,6 +12,8 @@ void (*g_output)(const char *msg, int len) = defaultOutput;
 
 Logger::Logger(LogLevel level, const char *file, int line)
     : level_(level), file_(file), line_(line) {
+  stream_ << "[" << Timestamp::now().toFormattedString() << "] " << "["
+          << Tupo::base::Thread::currentThreadTid() << "] ";
   switch (level_) {
   case LogLevel::DEBUG:
     stream_ << "[DEBUG] ";

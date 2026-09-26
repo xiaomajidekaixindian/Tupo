@@ -58,7 +58,6 @@ public:
   // 获取 Content-Length
   size_t contentLength() const;
 
-  
 private:
   Method method_;
   ParseState parseState_;
@@ -67,10 +66,10 @@ private:
   std::string version_;
   std::string body_;
 
-#ifdef DEBUG
+#ifdef TUPO_DEBUG
 public:
   size_t contentLength_;
-  void setContentLength(size_t contentLength){
+  void setContentLength(size_t contentLength) {
     contentLength_ = contentLength;
   }
 #endif

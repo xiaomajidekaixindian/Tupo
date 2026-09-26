@@ -5,6 +5,11 @@
 namespace Tupo {
 namespace base {
 
+namespace {
+// 线程局部变量，用于缓存当前线程的tid
+thread_local pid_t t_cachedTid = 0;
+} // namespace
+
 Thread::Thread(ThreadFunc func, const std::string &name)
     : started_(false), joined_(false), tid_(0), func_(std::move(func)),
       detached_(false), name_(name) {}
@@ -78,10 +83,12 @@ void Thread::detach() {
   thread_.detach();
 }
 
-
 // 获取的是当前线程的tid（调用这个函数的线程ID），而不是Thread对象所代表的线程的tid
 pid_t Thread::currentThreadTid() {
-  return static_cast<pid_t>(::syscall(SYS_gettid));
+  if (t_cachedTid == 0) {
+    t_cachedTid = static_cast<pid_t>(::syscall(SYS_gettid));
+  }
+  return t_cachedTid;
 }
 } // namespace base
 } // namespace Tupo

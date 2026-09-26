@@ -15,7 +15,6 @@ namespace net {
 class Poller;
 class EventLoop;
 class Channel;
-extern __thread EventLoop *t_loopInThisThread; // 声明
 
 class EventLoop {
 public:
@@ -44,7 +43,7 @@ public:
     }
   }
 
-  EventLoop *getEventLoopOfCurrent() { return t_loopInThisThread; }
+  EventLoop *getEventLoopOfCurrent();
   // 判断是否在事件线程中
   bool isInLoopThread() const {
     return threadId_ == Tupo::base::Thread::currentThreadTid();
@@ -78,20 +77,18 @@ public:
   // 解决多线程环境下，非IO线程安全地向IO线程（即EventLoop所在线程）提交任务的同步问题
   using Functor = std::function<void()>;
 
-  template<typename T>
-  void runInLoop(T &&cb){
-    if(isInLoopThread()){
-        cb();
-    }else{
-        queueInLoop(std::forward<T>(cb));
+  template <typename T> void runInLoop(T &&cb) {
+    if (isInLoopThread()) {
+      cb();
+    } else {
+      queueInLoop(std::forward<T>(cb));
     }
   }
 
-  template<typename T>  
-  void queueInLoop(T &&cb){
+  template <typename T> void queueInLoop(T &&cb) {
     {
-        Tupo::base::MutexLockGuard lock(mutex_);
-        pendingFunctors_.emplace_back(std::forward<T>(cb));
+      Tupo::base::MutexLockGuard lock(mutex_);
+      pendingFunctors_.emplace_back(std::forward<T>(cb));
     }
     wakeup();
   }

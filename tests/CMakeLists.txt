@@ -11,7 +11,7 @@ endif()
 
 # 将 ENABLE_DEBUG 传递给所有测试目标
 if(ENABLE_DEBUG)
-    add_compile_definitions(DEBUG)
+    add_compile_definitions(TUPO_DEBUG)
     message(STATUS "🔧 Test DEBUG mode: ENABLED (private functions visible)")
 else()
     message(STATUS "🚀 Test DEBUG mode: DISABLED (private functions hidden)")

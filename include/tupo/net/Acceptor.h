@@ -1,22 +1,24 @@
 #pragma once
-#include "tupo/net/EventLoop.h"
-#include "tupo/net/Socket.h"
+#include "tupo/base/Logger.h"
 #include "tupo/net/Channel.h"
+#include "tupo/net/EventLoop.h"
 #include "tupo/net/InetAddress.h"
+#include "tupo/net/Socket.h"
 namespace Tupo {
 namespace net {
 class Acceptor {
 public:
   // 新连接，传递给TcpServer，来创建TcpConnection对象
-  using NewConnectionCallback = std::function<void(int sockfd, const InetAddress &)>;
+  using NewConnectionCallback =
+      std::function<void(int sockfd, const InetAddress &)>;
 
-  Acceptor(EventLoop *loop,const InetAddress &addr);
-  
+  Acceptor(EventLoop *loop, const InetAddress &addr);
+
   // 监听
   void listen();
-  
+
   void setNewConnectionCallback(NewConnectionCallback cb) {
-     newConnectionCallback_ = std::move(cb);
+    newConnectionCallback_ = std::move(cb);
   }
 
 private:
