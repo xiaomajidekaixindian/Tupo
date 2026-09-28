@@ -1,5 +1,4 @@
 #include "tupo/net/Acceptor.h"
-#include <iostream>
 namespace Tupo {
 namespace net {
 Acceptor::Acceptor(EventLoop *loop, const InetAddress &addr)

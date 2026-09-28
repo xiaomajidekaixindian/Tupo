@@ -1,6 +1,5 @@
 #include "tupo/base/Thread.h"
 #include <future>
-#include <iostream>
 
 namespace Tupo {
 namespace base {

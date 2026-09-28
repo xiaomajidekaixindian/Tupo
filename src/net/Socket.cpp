@@ -1,7 +1,6 @@
 #include "tupo/net/Socket.h"
+#include "tupo/base/Logger.h"
 #include <cstring>
-#include <iostream>
-
 namespace Tupo {
 namespace net {
 
@@ -27,7 +26,8 @@ int Socket::release() {
 }
 
 void Socket::bind(const struct sockaddr *addr, socklen_t addrlen) {
-  std::cout<<"sockfd："<<sockfd_<<"，addrlen"<<addrlen<<std::endl;
+  LOG_INFO << "Socket bind: sockfd = " << sockfd_ << ", addrlen = " << addrlen;
+
   if (::bind(sockfd_, addr, addrlen) < 0) {
     // 处理绑定错误
     // 可以抛出异常或者记录日志
@@ -46,21 +46,23 @@ void Socket::listen() {
 int Socket::accept(InetAddress *peerAddr) {
   struct sockaddr_storage addr;
   socklen_t addrlen = sizeof(addr);
-  int connfd = ::accept(sockfd_, reinterpret_cast<struct sockaddr *>(&addr), &addrlen);
+  int connfd =
+      ::accept(sockfd_, reinterpret_cast<struct sockaddr *>(&addr), &addrlen);
   if (connfd < 0) {
     // 处理接受连接错误
     // 可以抛出异常或者记录日志
     std::cerr << "Socket accept error: " << strerror(errno) << std::endl;
   }
   if (connfd >= 0 && peerAddr) {
-      *peerAddr = InetAddress(*reinterpret_cast<struct sockaddr_in*>(&addr)); // 获取对端地址
+    *peerAddr = InetAddress(
+        *reinterpret_cast<struct sockaddr_in *>(&addr)); // 获取对端地址
   }
   return connfd;
 }
 
 int Socket::accept(InetAddress *peerAddr, socklen_t *addrlen) {
-  struct sockaddr* sockaddr = peerAddr->getSockAddr();
-  int connfd = ::accept(sockfd_,sockaddr, addrlen);
+  struct sockaddr *sockaddr = peerAddr->getSockAddr();
+  int connfd = ::accept(sockfd_, sockaddr, addrlen);
   if (connfd < 0) {
     // 处理接受连接错误
     // 可以抛出异常或者记录日志
@@ -108,15 +110,16 @@ void Socket::setKeepAlive(bool on) {
   setSockOpt(SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval));
 }
 
-void Socket::shutdownWrite(){
-    if (sockfd_ >= 0) {
-      if (::shutdown(sockfd_, SHUT_WR) < 0) {
-          // 如果已经关闭了，忽略错误
-          if (errno != ENOTCONN) {
-                std::cerr << "Socket::shutdownWrite error: " << strerror(errno) << std::endl;
-            }
-        }
+void Socket::shutdownWrite() {
+  if (sockfd_ >= 0) {
+    if (::shutdown(sockfd_, SHUT_WR) < 0) {
+      // 如果已经关闭了，忽略错误
+      if (errno != ENOTCONN) {
+        std::cerr << "Socket::shutdownWrite error: " << strerror(errno)
+                  << std::endl;
+      }
     }
+  }
 }
 } // namespace net
 } // namespace Tupo

@@ -21,6 +21,20 @@ LogStream &LogStream::operator<<(unsigned int v) {
   return *this;
 }
 
+LogStream &LogStream::operator<<(size_t v) {
+  char buf[32];
+  int len = snprintf(buf, sizeof(buf), "%zu", v);
+  append(buf, len);
+  return *this;
+}
+
+LogStream &LogStream::operator<<(ssize_t v) {
+  char buf[32];
+  int len = snprintf(buf, sizeof(buf), "%zd", v);
+  append(buf, len);
+  return *this;
+}
+
 LogStream &LogStream::operator<<(double v) {
   char buf[32];
   int len = snprintf(buf, sizeof(buf), "%.12f", v);

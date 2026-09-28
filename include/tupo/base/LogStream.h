@@ -9,6 +9,8 @@ public:
   LogStream &operator<<(bool v);
   LogStream &operator<<(int v);
   LogStream &operator<<(unsigned int v);
+  LogStream &operator<<(size_t v);
+  LogStream &operator<<(ssize_t v);
   LogStream &operator<<(double v);
   LogStream &operator<<(char c);
   LogStream &operator<<(const char *str);

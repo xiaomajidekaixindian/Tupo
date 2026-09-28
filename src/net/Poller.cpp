@@ -1,8 +1,8 @@
 #include "tupo/net/Poller.h"
+#include "tupo/base/Logger.h"
 #include "tupo/net/Channel.h"
 #include "tupo/net/poller/EpollPoller.h"
 #include "tupo/net/poller/PollPoller.h"
-#include <iostream>
 namespace Tupo {
 namespace net {
 
@@ -14,10 +14,10 @@ std::unique_ptr<Poller> Poller::newDefaultPoller(EventLoop *loop) {
 
   // 自动检测，优先使用epoll
 #ifdef __linux__
-  std::cout << "Using EPollPoller (auto-detected Linux)" << std::endl;
+  LOG_INFO << "Using EPollPoller (auto-detected Linux)";
   return std::make_unique<EpollPoller>(loop);
 #else
-  std::cout << "Using PollPoller (fallback for non-Linux)" << std::endl;
+  LOG_INFO << "Using PollPoller (fallback for non-Linux)";
   return std::make_unique<PollPoller>(loop);
 #endif
 }

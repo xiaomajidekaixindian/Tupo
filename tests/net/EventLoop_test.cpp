@@ -1,7 +1,7 @@
+#include "tupo/base/Logger.h"
 #include "tupo/net/EventLoop.h"
 #include <gtest/gtest.h>
 #include <sys/timerfd.h>
-
 class EventLoopTest : public testing::Test {
 protected:
   // 提供自定义的构造函数
@@ -29,7 +29,7 @@ TEST_F(EventLoopTest, isInLoopThread) { EXPECT_TRUE(loop_.isInLoopThread()); }
 Tupo::net::EventLoop *g_loop;
 
 void timeout() {
-  std::cout << "Timeout!" << std::endl;
+  LOG_INFO << "Timeout!";
   g_loop->quit();
 }
 

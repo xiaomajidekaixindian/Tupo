@@ -1,26 +1,25 @@
 
 #include "tupo/net/poller/PollPoller.h"
+#include "tupo/base/Logger.h"
 #include "tupo/net/Channel.h"
-#include <iostream>
 
 namespace Tupo {
 namespace net {
 
 PollPoller::PollPoller(EventLoop *loop) : Poller(loop) {
-  std::cout << "PollPoller created" << std::endl;
+  LOG_INFO << "PollPoller created";
 }
 
 void PollPoller::poll(int timeout, ChannelList *activeChannels) {
   // 调用poll获取事件
   int numEvents = ::poll(pollfds_.data(), pollfds_.size(), timeout);
   if (numEvents > 0) {
-    std::cout << "PollPoller::poll() " << numEvents << " events happened"
-              << std::endl;
+    LOG_DEBUG << "PollPoller::poll() " << numEvents << " events happened";
     findActiveChannels(numEvents, activeChannels);
   } else if (numEvents == 0) {
-    std::cout << "PollPoller::poll() nothing happened" << std::endl;
+    LOG_WARN << "PollPoller::poll() nothing happened";
   } else {
-    std::cerr << "PollPoller::poll() error: " << errno << std::endl;
+    LOG_ERROR << "PollPoller::poll() error: " << errno;
   }
 }
 
@@ -39,8 +38,8 @@ void PollPoller::updateChannel(Channel *channel) {
     int index = static_cast<int>(pollfds_.size()) - 1;
     channel->set_index(index);
     channels_[pfd.fd] = channel;
-    std::cout << "Added new channel - channels_.size() = " << channels_.size()
-              << ", hasChannel = " << hasChannel(channel) << std::endl;
+    LOG_DEBUG << "Added new channel - channels_.size() = " << channels_.size()
+              << ", hasChannel = " << hasChannel(channel);
   } else { // 更新已有的Channel
     assert(channels_.find(channel->fd()) != channels_.end());
     assert(channels_[channel->fd()] == channel);

@@ -1,9 +1,9 @@
 #include "tupo/net/TimerQueue.h"
+#include "tupo/base/Logger.h"
 #include "tupo/base/Timestamp.h"
 #include "tupo/net/EventLoop.h"
 #include <algorithm>
 #include <assert.h>
-#include <iostream>
 #include <string.h>
 #include <sys/timerfd.h>
 #include <unistd.h>
@@ -15,7 +15,7 @@ namespace detail {
 int createTimerfd() {
   int timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
   if (timerfd < 0) {
-    std::cerr << "Failed in timerfd_create" << std::endl;
+    LOG_ERROR << "Failed in timerfd_create";
   }
   return timerfd;
 }
@@ -25,7 +25,7 @@ void readTimerfd(int timerfd, Tupo::base::Timestamp now) {
   uint64_t howmany;
   ssize_t n = ::read(timerfd, &howmany, sizeof howmany);
   if (n != sizeof(howmany)) {
-    std::cerr << "TimerQueue::handleRead() reads " << n
+    LOG_ERROR << "TimerQueue::handleRead() reads " << n
               << " bytes instead of 8";
   }
 }
@@ -59,7 +59,7 @@ void resetTimerfd(int timerfd, Tupo::base::Timestamp expration) {
 
   int ret = timerfd_settime(timerfd, 0, &newValue, &oldValue);
   if (ret) {
-    std::cout << "timerfd_settime()" << std::endl;
+    LOG_INFO << "timerfd_settime()";
   }
 }
 } // namespace detail
@@ -67,8 +67,7 @@ void resetTimerfd(int timerfd, Tupo::base::Timestamp expration) {
 TimerQueue::TimerQueue(EventLoop *loop)
     : loop_(loop), timerfd_(detail::createTimerfd()),
       timerfdChannel_(loop, timerfd_), callingExpiredTimers_(false) {
-  std::cout << "TimerQueue created" << std::endl;
-
+  LOG_INFO << "TimerQueue created";
   // 定时器到期变为可读状态，触发
   timerfdChannel_.setReadCallback([this]() { this->handleRead(); });
 

@@ -1,6 +1,5 @@
 #include "tupo/net/Channel.h"
 #include "tupo/net/EventLoop.h"
-#include <iostream>
 #include <poll.h>
 namespace Tupo {
 namespace net {

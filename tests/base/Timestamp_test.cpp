@@ -33,8 +33,8 @@ TEST_F(TimestampTest, NowMethod) {
   auto ts1 = Tupo::base::Timestamp::now();
   auto ts2 = Tupo::base::Timestamp::now();
 
-  std::cout << "ts1的微秒值为:" << ts1.microSecondsSinceEpoch() << std::endl;
-  std::cout << "ts2的微秒值为:" << ts2.microSecondsSinceEpoch() << std::endl;
+  LOG_DEBUG << "ts1的微秒值为:" << ts1.microSecondsSinceEpoch();
+  LOG_DEBUG << "ts2的微秒值为:" << ts2.microSecondsSinceEpoch();
 
   // 验证时间戳不为0
   EXPECT_GT(ts1.microSecondsSinceEpoch(), 0);
@@ -50,7 +50,7 @@ TEST_F(TimestampTest, resetTimeMethod) {
   auto ts = Tupo::base::Timestamp::now();
   double interval = 3.0;
   Tupo::base::Timestamp time = Tupo::base::Timestamp::resetTime(ts, interval);
-  std::cout << "3秒后时间为:" << time.microSecondsSinceEpoch() << std::endl;
+  LOG_DEBUG << "3秒后时间为:" << time.microSecondsSinceEpoch();
 }
 
 // 测试4：测试格式化输出

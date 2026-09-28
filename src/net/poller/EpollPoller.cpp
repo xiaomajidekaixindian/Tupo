@@ -1,5 +1,5 @@
 #include "tupo/net/poller/EpollPoller.h"
-#include <iostream>
+#include "tupo/base/Logger.h"
 #include <string.h>
 
 namespace Tupo {
@@ -8,29 +8,27 @@ EpollPoller::EpollPoller(EventLoop *loop)
     : Poller(loop), epollfd_(epoll_create1(EPOLL_CLOEXEC)),
       events_(kInitEventListSize) {
   if (epollfd_ < 0) {
-    std::cerr << "EPollPoller::EPollPoller - epoll_create1 error: " << errno
-              << std::endl;
+    LOG_ERROR << "EPollPoller::EPollPoller - epoll_create1 error: " << errno;
     abort();
   }
-  std::cout << "EPollPoller created, epollfd=" << epollfd_ << std::endl;
+  LOG_DEBUG << "EPollPoller created, epollfd=" << epollfd_;
 }
 EpollPoller::~EpollPoller() {
 
   ::close(epollfd_);
-  std::cout << "EPollPoller destroyed" << std::endl;
+  LOG_INFO << "EPollPoller destroyed";
 }
 
 void EpollPoller::poll(int timeout, ChannelList *activeChannels) {
-  std::cout << "EPollPoller::poll() waiting for events, timeout=" << timeout
-            << "ms" << std::endl;
+  LOG_DEBUG << "EPollPoller::poll() waiting for events, timeout=" << timeout
+            << "ms";
   // >0:有numEvents事件就绪，==0:超时了，没有事件，==-1出错
   int numEvents = ::epoll_wait(epollfd_, events_.data(),
                                static_cast<int>(events_.size()), timeout);
   int savedErrno = errno;
 
   if (numEvents > 0) {
-    std::cout << "EPollPoller::poll() " << numEvents << " events happened"
-              << std::endl;
+    LOG_DEBUG << "EPollPoller::poll() " << numEvents << " events happened";
     findActiveChannels(numEvents, activeChannels);
 
     // 如果事件列表满了，扩容
@@ -38,20 +36,20 @@ void EpollPoller::poll(int timeout, ChannelList *activeChannels) {
       events_.resize(events_.size() * 2);
     }
   } else if (numEvents == 0) {
-    std::cout << "EPollPoller::poll() nothing happened" << std::endl;
+    LOG_WARN << "EPollPoller::poll() nothing happened";
   } else {
     // EINTR 是信号中断，不是错误
     if (savedErrno != EINTR) {
       errno = savedErrno;
-      std::cerr << "EPollPoller::poll() error: " << errno << std::endl;
+      LOG_ERROR << "EPollPoller::poll() error: " << errno;
     }
   }
 }
 void EpollPoller::updateChannel(Channel *channel) {
   assertInLoopThread();
   int fd = channel->fd();
-  std::cout << "EPollPoller::updateChannel() fd=" << fd
-            << " events=" << channel->events() << std::endl;
+  LOG_DEBUG << "EPollPoller::updateChannel() fd=" << fd
+            << " events=" << channel->events();
   // 检查是否已经管理这个Channel
   bool isManaged = (channels_.find(fd) != channels_.end());
   if (!isManaged) {
@@ -74,7 +72,7 @@ void EpollPoller::updateChannel(Channel *channel) {
 
 void EpollPoller::removeChannel(Channel *channel) {
   assertInLoopThread();
-  std::cout << "EPollPoller::removeChannel() fd=" << channel->fd() << std::endl;
+  LOG_DEBUG << "EPollPoller::removeChannel() fd=" << channel->fd();
 
   int fd = channel->fd();
 
@@ -99,8 +97,7 @@ void EpollPoller::update(int operation, Channel *channel) {
   int fd = channel->fd();
 
   if (epoll_ctl(epollfd_, operation, fd, &event) < 0) {
-    std::cerr << "operation:" << operation << ",fd=" << fd << ",error:" << errno
-              << std::endl;
+    LOG_ERROR << "EPollPoller::update() error: " << errno;
   }
 }
 

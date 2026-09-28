@@ -1,6 +1,5 @@
 #include "tupo/net/EventLoopThread.h"
 #include "tupo/net/EventLoop.h"
-#include <iostream>
 
 namespace Tupo {
 namespace net {

@@ -1,6 +1,6 @@
+#include "tupo/base/Logger.h"
 #include "tupo/net/EventLoopThreadPool.h"
 #include <gtest/gtest.h>
-
 class EventLoopThreadPoolTest : public ::testing::Test {
 protected:
   void SetUp() override {}
@@ -22,10 +22,9 @@ TEST_F(EventLoopThreadPoolTest, StartWithThreadsAndGetNextLoop) {
   pool.start();
   for (int i = 0; i < 8; ++i) {
     Tupo::net::EventLoop *loop = pool.getNextLoop();
-    loop->runInLoop([loop]() {
-      std::cout << "Task running in EventLoop: " << loop << std::endl;
-    });
+    loop->runInLoop(
+        [loop]() { LOG_DEBUG << "Task running in EventLoop: " << loop; });
     EXPECT_NE(loop, &baseLoop);
-    std::cout << loop << std::endl;
+    LOG_DEBUG << "Got EventLoop: " << loop;
   }
 }

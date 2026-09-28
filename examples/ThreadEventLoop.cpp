@@ -1,16 +1,16 @@
+#include "tupo/base/Logger.h"
 #include "tupo/base/Thread.h"
 #include "tupo/net/EventLoop.h"
-#include <iostream>
 
 void threadFunc() {
   Tupo::net::EventLoop loop;
-  std::cout << "threadFunc(): pid:" << getpid()
-            << ",tid:" << Tupo::base::Thread::currentThreadTid() << std::endl;
+  LOG_INFO << "threadFunc(): pid:" << getpid()
+           << ",tid:" << Tupo::base::Thread::currentThreadTid();
   loop.loop();
 }
 int main() {
-  std::cout << "main(): pid:" << getpid()
-            << ",tid:" << Tupo::base::Thread::currentThreadTid() << std::endl;
+  LOG_INFO << "main(): pid:" << getpid()
+           << ",tid:" << Tupo::base::Thread::currentThreadTid();
   Tupo::net::EventLoop loop;
 
   Tupo::base::Thread thread(threadFunc);

@@ -1,7 +1,7 @@
 #include "tupo/net/EventLoop.h"
+#include "tupo/base/Logger.h"
 #include "tupo/net/Poller.h"
 #include "tupo/net/poller/PollPoller.h"
-#include <iostream>
 #include <sys/eventfd.h>
 namespace Tupo {
 namespace net {
@@ -28,11 +28,11 @@ EventLoop::EventLoop()
       timerQueue_(new TimerQueue(this)), wakeupFd_(createEventfd()),
       wakeupChannel_(new Channel(this, wakeupFd_)) {
   if (t_loopInThisThread != nullptr) {
-    std::cout << "Another EventLoop exists in this thread " << threadId_
-              << std::endl;
+    LOG_ERROR << "Another EventLoop " << t_loopInThisThread
+              << " exists in this thread " << threadId_;
   } else {
     t_loopInThisThread = this;
-    std::cout << "EventLoop created in thread " << threadId_ << std::endl;
+    LOG_INFO << "EventLoop created in thread " << threadId_;
   }
   // 跨线程唤醒
   wakeupChannel_->setReadCallback([this]() { this->handleRead(); });
@@ -56,7 +56,7 @@ void EventLoop::loop() {
   assertInLoopThread(); // 确保在正确的线程
   looping_ = true;
   quit_ = false;
-  std::cout << "EventLoop " << this << " start looping" << std::endl;
+  LOG_INFO << "EventLoop " << this << " start looping";
   while (!quit_) {
     // 清空活动通道列表
     activeChannels_.clear();
@@ -67,12 +67,12 @@ void EventLoop::loop() {
     }
     doPendingFunctors();
   }
-  std::cout << "EventLoop" << this << "stop looping" << std::endl;
+  LOG_INFO << "EventLoop" << this << "stop looping";
   looping_ = false;
 }
 
 void EventLoop::quit() {
-  std::cout << "EventLoop quit" << std::endl;
+  LOG_INFO << "EventLoop quit" << this;
   quit_ = true;
   // 如果在其他线程调用，需要唤醒 poll，否则可能永久阻塞
   if (!isInLoopThread()) {
@@ -86,8 +86,8 @@ void EventLoop::updateChannel(Channel *channel) {
   // 1. 关键：确保在IO线程中调用
   assertInLoopThread();
   // 2. 记录调试信息
-  std::cout << "EventLoop::updateChannel fd = " << channel->fd()
-            << " events = " << channel->events() << std::endl;
+  LOG_INFO << "EventLoop::updateChannel fd = " << channel->fd()
+           << " events = " << channel->events();
   poller_->updateChannel(channel);
 }
 
@@ -98,7 +98,7 @@ void EventLoop::removeChannel(Channel *channel) {
 }
 
 void EventLoop::abortNotInLoopThread() {
-  std::cout << "EventLoop::abortNotInLoopThread - EventLoop " << this
+  LOG_ERROR << "EventLoop::abortNotInLoopThread - EventLoop " << this
             << " was created in threadId_ = " << threadId_
             << ", current thread id = "
             << Tupo::base::Thread::currentThreadTid();

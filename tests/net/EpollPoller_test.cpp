@@ -1,3 +1,4 @@
+#include "tupo/base/Logger.h"
 #include "tupo/net/Channel.h"
 #include "tupo/net/EventLoop.h"
 #include "tupo/net/Socket.h"
@@ -198,11 +199,11 @@ TEST_F(EpollPollerTest, HighLoadChannels) {
   }
 
   // 打印统计信息（便于调试）
-  std::cout << "Active channels: " << activeChannels.size() << std::endl;
-  std::cout << "EPOLLERR count: " << errorCount << std::endl;
-  std::cout << "EPOLLHUP count: " << hupCount << std::endl;
-  std::cout << "EPOLLIN count: " << inCount << std::endl;
-  std::cout << "EPOLLOUT count: " << outCount << std::endl;
+  LOG_DEBUG << "Active channels: " << activeChannels.size();
+  LOG_DEBUG << "EPOLLERR count: " << errorCount;
+  LOG_DEBUG << "EPOLLHUP count: " << hupCount;
+  LOG_DEBUG << "EPOLLIN count: " << inCount;
+  LOG_DEBUG << "EPOLLOUT count: " << outCount;
 
   // 验证：所有活跃事件都是错误或挂起事件
   EXPECT_EQ(errorCount + hupCount, activeChannels.size())

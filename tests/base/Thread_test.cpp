@@ -1,3 +1,4 @@
+#include "tupo/base/Logger.h"
 #include "tupo/base/MutexLock.h"
 #include "tupo/base/Thread.h"
 #include <future>
@@ -44,8 +45,8 @@ TEST_F(ThreadTest, MultipleThreads) {
     // 启动线程
     thread.start();
     // 打印线程ID和名称
-    std::cout << "Started thread with ID: " << thread.tid() << std::endl;
-    std::cout << "Thread name: " << thread.name() << std::endl;
+    LOG_DEBUG << "Started thread with ID: " << thread.tid();
+    LOG_DEBUG << "Thread name: " << thread.name();
   }
   for (auto &thread : threads) {
     thread.join();
@@ -60,10 +61,11 @@ TEST_F(ThreadTest, DetachThread) {
   {
     Tupo::base::Thread thread([promise_ptr]() mutable {
       std::this_thread::sleep_for(std::chrono::milliseconds(100)); // 模拟工作
-      std::cout<<"child thread id: "<<Tupo::base::Thread::currentThreadTid()<<std::endl;
+      LOG_DEBUG << "child thread id: "
+                << Tupo::base::Thread::currentThreadTid();
       promise_ptr->set_value(); // 通知测试线程工作完成
     });
-    std::cout<<"main thread id: "<<Tupo::base::Thread::currentThreadTid()<<std::endl;
+    LOG_DEBUG << "main thread id: " << Tupo::base::Thread::currentThreadTid();
     thread.start();
     thread.detach();
   }

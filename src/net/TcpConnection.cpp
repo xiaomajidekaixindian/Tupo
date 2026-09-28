@@ -1,7 +1,6 @@
 #include "tupo/net/TcpConnection.h"
+#include "tupo/base/Logger.h"
 #include "tupo/net/EventLoop.h"
-#include <iostream>
-
 namespace Tupo {
 namespace net {
 TcpConnection::TcpConnection(int connfd, EventLoop *loop,
@@ -73,8 +72,7 @@ void TcpConnection::sendInLoop(const std::string &msg) {
 
 void TcpConnection::sendInLoop(const char *data, size_t len) {
   if (state_ == kDisconnected) {
-    std::cout << "TcpConnection::sendInLoop - disconnected, give up writing"
-              << std::endl;
+    LOG_INFO << "TcpConnection::sendInLoop - disconnected, give up writing";
     return;
   }
 
@@ -107,8 +105,7 @@ void TcpConnection::sendInLoop(const char *data, size_t len) {
 
 void TcpConnection::sendInLoop(const Buffer &buffer) {
   if (state_ == kDisconnected) {
-    std::cout << "TcpConnection::sendInLoop - disconnected, give up writing"
-              << std::endl;
+    LOG_INFO << "TcpConnection::sendInLoop - disconnected, give up writing";
     return;
   }
 
@@ -219,10 +216,10 @@ void TcpConnection::setState(State state) { state_ = state; }
 EventLoop *TcpConnection::getLoop() {
   loop_->assertInLoopThread();
   if (loop_->isInLoopThread()) {
-    std::cout << "TcpConnection::getLoop - in loop thread" << std::endl;
+    LOG_INFO << "TcpConnection::getLoop - in loop thread";
     return loop_;
   } else {
-    std::cout << "TcpConnection::getLoop - not in loop thread" << std::endl;
+    LOG_INFO << "TcpConnection::getLoop - not in loop thread";
     return nullptr;
   }
 }
