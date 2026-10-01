@@ -1,4 +1,5 @@
 #include "tupo/net/Channel.h"
+#include "tupo/base/Logger.h"
 #include "tupo/net/EventLoop.h"
 #include <poll.h>
 namespace Tupo {
@@ -6,11 +7,11 @@ namespace net {
 Channel::Channel(Tupo::net::EventLoop *loop, int fd)
     : loop_(loop), fd_(fd), events_(0), revents_(0), index_(-1),
       addedToLoop_(false) {}
-Channel::~Channel() { remove();}
+Channel::~Channel() { remove(); }
 
 void Channel::handleEvent() {
   if (revents_ & POLLNVAL) {
-    std::cerr << "Channel::handle_event() POLLNVAL" << std::endl;
+    LOG_ERROR << "Channel::handle_event() POLLNVAL";
   }
 
   if (revents_ & (POLLERR | POLLNVAL)) {

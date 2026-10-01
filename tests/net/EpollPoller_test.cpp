@@ -17,7 +17,7 @@ protected:
   int createNonBlockingSocket() {
     int fd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
     if (fd < 0) {
-      std::cerr << "Failed to create socket: " << strerror(errno);
+      LOG_ERROR << "Failed to create socket: " << strerror(errno);
     }
     return fd;
   }

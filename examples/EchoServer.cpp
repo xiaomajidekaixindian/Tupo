@@ -103,13 +103,13 @@ int main(int argc, char *argv[]) {
 
   Tupo::net::EventLoop loop;
   Tupo::net::InetAddress listenAddr(port);
-  EchoServer echoServer(&loop, listenAddr);
+  EchoServer echoServer(&loop, listenAddr, 4);
   g_echoServer = &echoServer;
   try {
     echoServer.start();
     loop.loop(); // 进入事件循环
   } catch (const std::exception &e) {
-    std::cerr << "错误: " << e.what() << std::endl;
+    LOG_ERROR << "错误: " << e.what();
     return 1;
   }
 }

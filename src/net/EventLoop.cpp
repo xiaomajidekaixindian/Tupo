@@ -13,7 +13,7 @@ const int kPollTimeMs = 10000;
 int createEventfd() {
   int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
   if (evtfd < 0) {
-    std::cerr << "Failed in eventfd" << std::endl;
+    LOG_ERROR << "Failed in eventfd";
   }
   return evtfd;
 }
@@ -35,8 +35,8 @@ EventLoop::EventLoop()
     LOG_INFO << "EventLoop created in thread " << threadId_;
   }
   // 跨线程唤醒
-  wakeupChannel_->setReadCallback([this]() { this->handleRead(); });
-  wakeupChannel_->enableReading();
+  // wakeupChannel_->setReadCallback([this]() { this->handleRead(); });
+  // wakeupChannel_->enableReading();
 };
 
 EventLoop::~EventLoop() {
@@ -135,7 +135,7 @@ void EventLoop::wakeup() {
   uint64_t one = 1;
   ssize_t n = ::write(wakeupFd_, &one, sizeof(one));
   if (n != sizeof(one)) {
-    std::cerr << "EventLoop::wakeup() writes " << n << " bytes instead of 8";
+    LOG_ERROR << "EventLoop::wakeup() writes " << n << " bytes instead of 8";
   }
 }
 
@@ -143,7 +143,7 @@ void EventLoop::handleRead() {
   uint64_t one = 1;
   ssize_t n = ::read(wakeupFd_, &one, sizeof one);
   if (n != sizeof one) {
-    std::cerr << "EventLoop::handleRead() reads " << n << " bytes instead of 8";
+    LOG_ERROR << "EventLoop::handleRead() reads " << n << " bytes instead of 8";
   }
 }
 } // namespace net

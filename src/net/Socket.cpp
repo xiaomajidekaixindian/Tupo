@@ -31,7 +31,7 @@ void Socket::bind(const struct sockaddr *addr, socklen_t addrlen) {
   if (::bind(sockfd_, addr, addrlen) < 0) {
     // 处理绑定错误
     // 可以抛出异常或者记录日志
-    std::cerr << "Socket bind error: " << strerror(errno) << std::endl;
+    LOG_ERROR << "Socket bind error: " << strerror(errno);
   }
 }
 
@@ -39,7 +39,7 @@ void Socket::listen() {
   if (::listen(sockfd_, SOMAXCONN) < 0) {
     // 处理监听错误
     // 可以抛出异常或者记录日志
-    std::cerr << "Socket listen error: " << strerror(errno) << std::endl;
+    LOG_ERROR << "Socket listen error: " << strerror(errno);
   }
 }
 
@@ -51,7 +51,7 @@ int Socket::accept(InetAddress *peerAddr) {
   if (connfd < 0) {
     // 处理接受连接错误
     // 可以抛出异常或者记录日志
-    std::cerr << "Socket accept error: " << strerror(errno) << std::endl;
+    LOG_ERROR << "Socket accept error: " << strerror(errno);
   }
   if (connfd >= 0 && peerAddr) {
     *peerAddr = InetAddress(
@@ -66,7 +66,7 @@ int Socket::accept(InetAddress *peerAddr, socklen_t *addrlen) {
   if (connfd < 0) {
     // 处理接受连接错误
     // 可以抛出异常或者记录日志
-    std::cerr << "Socket accept error: " << strerror(errno) << std::endl;
+    LOG_ERROR << "Socket accept error: " << strerror(errno);
   }
   return connfd;
 }
@@ -75,7 +75,7 @@ int Socket::createNonblockingOrDie() {
   // IPV4，TCP通信，非阻塞模式，执行时关闭
   int sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
   if (sockfd < 0) {
-    std::cerr << "Socket::createNonblockingOrDie failed" << std::endl;
+    LOG_ERROR << "Socket::createNonblockingOrDie failed";
     abort();
   }
   return sockfd;
@@ -86,7 +86,7 @@ void Socket::setSockOpt(int level, int optname, const void *optval,
   if (::setsockopt(sockfd_, level, optname, optval, optlen) < 0) {
     // 处理设置套接字选项错误
     // 可以抛出异常或者记录日志
-    std::cerr << "Socket setsockopt error: " << strerror(errno) << std::endl;
+    LOG_ERROR << "Socket setsockopt error: " << strerror(errno);
   }
 }
 
@@ -115,8 +115,7 @@ void Socket::shutdownWrite() {
     if (::shutdown(sockfd_, SHUT_WR) < 0) {
       // 如果已经关闭了，忽略错误
       if (errno != ENOTCONN) {
-        std::cerr << "Socket::shutdownWrite error: " << strerror(errno)
-                  << std::endl;
+        LOG_ERROR << "Socket::shutdownWrite error: " << strerror(errno);
       }
     }
   }

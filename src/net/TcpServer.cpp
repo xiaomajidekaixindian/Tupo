@@ -43,6 +43,7 @@ void TcpServer::onNewConnection(int connfd, const InetAddress &peerAddr) {
 
   // 启动连接
   subLoop->runInLoop([conn] { conn->connectEstablished(); });
+  // conn->connectEstablished();
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr &conn) {
