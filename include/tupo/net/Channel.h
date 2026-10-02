@@ -31,18 +31,10 @@ public:
   void handleEvent();
 
   // 绑定回调函数
-  void setReadCallback(EventCallback cb) {
-    readCallback_ = std::move(cb);
-  }
-  void setWriteCallback(EventCallback cb) {
-    writeCallback_ = std::move(cb);
-  }
-  void setErrorCallback(EventCallback cb) {
-    errorCallback_ = std::move(cb);
-  }
-  void setCloseCallback(EventCallback cb) {
-    closeCallback_ = std::move(cb);
-  }
+  void setReadCallback(EventCallback cb) { readCallback_ = std::move(cb); }
+  void setWriteCallback(EventCallback cb) { writeCallback_ = std::move(cb); }
+  void setErrorCallback(EventCallback cb) { errorCallback_ = std::move(cb); }
+  void setCloseCallback(EventCallback cb) { closeCallback_ = std::move(cb); }
 
   int fd() const { return fd_; }
 
@@ -71,9 +63,8 @@ public:
   }
   void disableAll() {
     events_ = kNoneEvent;
-    if (loop_ && addedToLoop_){
-        update();
-        addedToLoop_ = false;
+    if (loop_ && addedToLoop_) {
+      update();
     }
   }
   // 移除事件

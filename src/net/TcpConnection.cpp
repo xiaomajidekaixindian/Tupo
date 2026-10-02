@@ -29,7 +29,6 @@ void TcpConnection::connectEstablished() {
 void TcpConnection::connectDestroyed() {
   setState(kDisconnected);
   channel_->remove();
-  channel_->disableAll();
   if (tcpConnectionCallback_) {
     tcpConnectionCallback_(shared_from_this());
   }
