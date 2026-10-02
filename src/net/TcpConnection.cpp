@@ -214,12 +214,6 @@ void TcpConnection::handleClose() {
 
 void TcpConnection::setState(State state) { state_ = state; }
 
-EventLoop *TcpConnection::getLoop() {
-  loop_->assertInLoopThread();
-  if (loop_->isInLoopThread()) {
-    LOG_INFO << "TcpConnection::getLoop - in loop thread";
-    return loop_;
-  }
-}
+EventLoop *TcpConnection::getLoop() { return loop_; }
 } // namespace net
 } // namespace Tupo
