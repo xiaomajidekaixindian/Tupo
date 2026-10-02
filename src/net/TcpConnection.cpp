@@ -219,9 +219,6 @@ EventLoop *TcpConnection::getLoop() {
   if (loop_->isInLoopThread()) {
     LOG_INFO << "TcpConnection::getLoop - in loop thread";
     return loop_;
-  } else {
-    LOG_INFO << "TcpConnection::getLoop - not in loop thread";
-    return nullptr;
   }
 }
 } // namespace net
